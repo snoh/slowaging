@@ -263,12 +263,13 @@ export default function DailyMissions() {
 
     // 레벨업 체크
     const newLevel = Object.keys(levelSystem).reverse().find(level => 
-      userProgress.points + mission.points >= levelSystem[level as keyof typeof levelSystem].points
+      userProgress.points + mission.points >= levelSystem[parseInt(level) as keyof typeof levelSystem].points
     )
     
     if (newLevel && parseInt(newLevel) > userProgress.level) {
-      toast.success(`레벨업! ${levelSystem[newLevel as keyof typeof levelSystem].title}이 되었어요! 🎉`)
-      setUserProgress(prev => ({ ...prev, level: parseInt(newLevel) }))
+      const levelNum = parseInt(newLevel) as keyof typeof levelSystem
+      toast.success(`레벨업! ${levelSystem[levelNum].title}이 되었어요! 🎉`)
+      setUserProgress(prev => ({ ...prev, level: levelNum }))
     }
 
     // 미션 완료 표시

@@ -15,7 +15,8 @@ import {
   ArrowRight,
   Play,
   Pause,
-  RotateCcw
+  RotateCcw,
+  Target
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
