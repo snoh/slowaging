@@ -326,7 +326,6 @@ export default function DailyMissions() {
             <a href="/" className="text-gray-600 hover:text-primary-600 transition-colors">나이측정</a>
             <a href="/missions" className="text-primary-600 font-semibold">미션</a>
             <a href="/ar-simulator" className="text-gray-600 hover:text-primary-600 transition-colors">전망</a>
-            <a href="/community" className="text-gray-600 hover:text-primary-600 transition-colors">공유</a>
           </div>
         </div>
       </nav>

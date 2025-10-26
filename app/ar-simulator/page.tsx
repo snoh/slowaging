@@ -157,7 +157,6 @@ export default function ARSimulator() {
             <a href="/" className="text-gray-600 hover:text-primary-600 transition-colors">나이측정</a>
             <a href="/missions" className="text-gray-600 hover:text-primary-600 transition-colors">미션</a>
             <a href="/ar-simulator" className="text-primary-600 font-semibold">전망</a>
-            <a href="/community" className="text-gray-600 hover:text-primary-600 transition-colors">공유</a>
           </div>
         </div>
       </nav>

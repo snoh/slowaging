@@ -178,7 +178,6 @@ export default function BiologicalAgeCalculator() {
             <a href="/" className="text-primary-600 font-semibold">나이측정</a>
             <a href="/missions" className="text-gray-600 hover:text-primary-600 transition-colors">미션</a>
             <a href="/ar-simulator" className="text-gray-600 hover:text-primary-600 transition-colors">전망</a>
-            <a href="/community" className="text-gray-600 hover:text-primary-600 transition-colors">공유</a>
           </div>
         </div>
       </nav>
@@ -190,12 +189,15 @@ export default function BiologicalAgeCalculator() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          <h1 className="text-4xl font-bold gradient-text mb-4">
-            생체 나이 계산기
-          </h1>
-          <p className="text-gray-600 text-lg">
-            당신의 실제 나이와 생체 나이를 비교해보세요
-          </p>
+        <h1 className="text-4xl font-bold gradient-text mb-4">
+          생체 나이 계산기
+        </h1>
+        <p className="text-gray-600 text-lg mb-2">
+          당신의 실제 나이와 생체 나이를 비교해보세요
+        </p>
+        <p className="text-gray-500 text-sm">
+          생활습관을 입력하면 과학적 근거 기반으로 생체 나이를 계산해드립니다
+        </p>
         </motion.div>
 
         {/* 진행 표시기 */}
