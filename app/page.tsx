@@ -610,7 +610,15 @@ export default function BiologicalAgeCalculator() {
                   다시 계산하기
                 </button>
                 <button
-                  onClick={() => window.location.href = '/slowaging/missions/'}
+                  onClick={() => {
+                    // 일일 미션 페이지로 이동하면서 생체 나이 데이터 전달
+                    localStorage.setItem('biologicalAgeResult', JSON.stringify({
+                      biologicalAge: result.biologicalAge,
+                      ageDifference: result.ageDifference,
+                      healthScore: result.healthScore
+                    }))
+                    window.location.href = '/slowaging/missions/'
+                  }}
                   className="btn-primary"
                 >
                   저속노화 여정 시작하기
