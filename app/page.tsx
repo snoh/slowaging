@@ -256,61 +256,99 @@ export default function BiologicalAgeCalculator() {
                 기본 정보 입력
               </h2>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <div className="space-y-6">
+                {/* 실제 나이 */}
+                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-green-200">
+                  <label className="flex items-center text-base font-bold text-gray-800 mb-3">
+                    <span className="mr-2">🎂</span>
                     실제 나이
                   </label>
                   <input
                     type="number"
                     value={healthData.age}
                     onChange={(e) => setHealthData({...healthData, age: parseInt(e.target.value)})}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full p-4 text-lg font-semibold border-2 border-green-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white"
                     min="18"
                     max="100"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                {/* 성별 선택 - 버튼 형식 */}
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-200">
+                  <label className="flex items-center text-base font-bold text-gray-800 mb-3">
+                    <span className="mr-2">👤</span>
                     성별
                   </label>
-                  <select
-                    value={healthData.gender}
-                    onChange={(e) => setHealthData({...healthData, gender: e.target.value as 'male' | 'female'})}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  >
-                    <option value="male">남성</option>
-                    <option value="female">여성</option>
-                  </select>
+                  <div className="grid grid-cols-2 gap-4">
+                    <button
+                      type="button"
+                      onClick={() => setHealthData({...healthData, gender: 'male'})}
+                      className={`p-6 rounded-xl font-bold text-lg transition-all ${
+                        healthData.gender === 'male'
+                          ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg scale-105'
+                          : 'bg-white border-2 border-gray-300 text-gray-600 hover:border-blue-500'
+                      }`}
+                    >
+                      👨 남성
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setHealthData({...healthData, gender: 'female'})}
+                      className={`p-6 rounded-xl font-bold text-lg transition-all ${
+                        healthData.gender === 'female'
+                          ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white shadow-lg scale-105'
+                          : 'bg-white border-2 border-gray-300 text-gray-600 hover:border-pink-500'
+                      }`}
+                    >
+                      👩 여성
+                    </button>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                {/* 체중 */}
+                <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-6 border-2 border-orange-200">
+                  <label className="flex items-center text-base font-bold text-gray-800 mb-3">
+                    <span className="mr-2">⚖️</span>
                     체중 (kg)
                   </label>
                   <input
                     type="number"
                     value={healthData.weight}
                     onChange={(e) => setHealthData({...healthData, weight: parseInt(e.target.value)})}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full p-4 text-lg font-semibold border-2 border-orange-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white"
                     min="30"
                     max="200"
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                {/* 키 */}
+                <div className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-xl p-6 border-2 border-purple-200">
+                  <label className="flex items-center text-base font-bold text-gray-800 mb-3">
+                    <span className="mr-2">📏</span>
                     키 (cm)
                   </label>
                   <input
                     type="number"
                     value={healthData.height}
                     onChange={(e) => setHealthData({...healthData, height: parseInt(e.target.value)})}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    className="w-full p-4 text-lg font-semibold border-2 border-purple-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white"
                     min="120"
                     max="220"
                   />
+                  {healthData.weight && healthData.height && (
+                    <div className="mt-3">
+                      <p className="text-sm text-gray-600">BMI: {((healthData.weight / ((healthData.height / 100) ** 2)).toFixed(1))}</p>
+                      <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full transition-all duration-300"
+                          style={{
+                            width: `${Math.min(((healthData.weight / ((healthData.height / 100) ** 2) - 15) / 15) * 100, 100)}%`,
+                            backgroundColor: ((healthData.weight / ((healthData.height / 100) ** 2)) < 18.5) ? '#F59E0B' : ((healthData.weight / ((healthData.height / 100) ** 2)) < 25) ? '#10B981' : '#EF4444'
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
 
