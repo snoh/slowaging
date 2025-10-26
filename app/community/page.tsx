@@ -270,10 +270,10 @@ export default function Community() {
             <span className="text-2xl font-bold gradient-text">SlowAge Journey</span>
           </div>
           <div className="hidden md:flex items-center space-x-6">
-            <a href="/" className="text-gray-600 hover:text-primary-600 transition-colors">생체 나이</a>
+            <a href="/" className="text-gray-600 hover:text-primary-600 transition-colors">나이측정</a>
             <a href="/missions" className="text-gray-600 hover:text-primary-600 transition-colors">미션</a>
-            <a href="/ar-simulator" className="text-gray-600 hover:text-primary-600 transition-colors">AR 시뮬레이터</a>
-            <a href="/community" className="text-primary-600 font-semibold">커뮤니티</a>
+            <a href="/ar-simulator" className="text-gray-600 hover:text-primary-600 transition-colors">전망</a>
+            <a href="/community" className="text-primary-600 font-semibold">공유</a>
           </div>
         </div>
       </nav>

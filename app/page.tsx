@@ -175,10 +175,10 @@ export default function BiologicalAgeCalculator() {
             <span className="text-2xl font-bold gradient-text">SlowAge Journey</span>
           </div>
           <div className="hidden md:flex items-center space-x-6">
-            <a href="/" className="text-primary-600 font-semibold">건강 진단</a>
-            <a href="/missions" className="text-gray-600 hover:text-primary-600 transition-colors">일일 챌린지</a>
-            <a href="/ar-simulator" className="text-gray-600 hover:text-primary-600 transition-colors">미래 전망</a>
-            <a href="/community" className="text-gray-600 hover:text-primary-600 transition-colors">공유하기</a>
+            <a href="/" className="text-primary-600 font-semibold">나이측정</a>
+            <a href="/missions" className="text-gray-600 hover:text-primary-600 transition-colors">미션</a>
+            <a href="/ar-simulator" className="text-gray-600 hover:text-primary-600 transition-colors">전망</a>
+            <a href="/community" className="text-gray-600 hover:text-primary-600 transition-colors">공유</a>
           </div>
         </div>
       </nav>
