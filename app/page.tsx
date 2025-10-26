@@ -552,12 +552,12 @@ export default function BiologicalAgeCalculator() {
                 >
                   다시 계산하기
                 </button>
-                <a
-                  href="/missions"
+                <button
+                  onClick={() => window.location.href = '/slowaging/missions/'}
                   className="btn-primary"
                 >
                   저속노화 여정 시작하기
-                </a>
+                </button>
               </div>
             </motion.div>
           )}
