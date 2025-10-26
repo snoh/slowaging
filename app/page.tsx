@@ -195,7 +195,21 @@ export default function BiologicalAgeCalculator() {
         </p>
         </motion.div>
 
-        {/* 진행 표시기 */}
+        {/* 진행 표시기 - 개선 */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-sm font-semibold text-gray-600">단계</span>
+            <span className="text-lg font-bold text-primary-600">{step}/3 단계</span>
+          </div>
+          <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div 
+              className="h-full bg-gradient-to-r from-primary-500 to-primary-600 transition-all duration-500"
+              style={{ width: `${(step / 3) * 100}%` }}
+            />
+          </div>
+        </div>
+
+        {/* 진행 단계 아이콘 */}
         <div className="flex justify-center mb-8">
           <div className="flex items-center space-x-4">
             {[
@@ -206,7 +220,7 @@ export default function BiologicalAgeCalculator() {
               <div key={stepInfo.number} className="flex items-center">
                 <div className={`w-14 h-14 rounded-full flex flex-col items-center justify-center font-semibold transition-all ${
                   step >= stepInfo.number 
-                    ? 'bg-primary-500 text-white scale-110' 
+                    ? 'bg-green-500 text-white scale-110 shadow-lg' 
                     : 'bg-gray-200 text-gray-500'
                 }`}>
                   <span className="text-xl">{stepInfo.icon}</span>
@@ -214,7 +228,7 @@ export default function BiologicalAgeCalculator() {
                 </div>
                 {stepInfo.number < 3 && (
                   <div className={`w-16 h-1 mx-2 transition-all ${
-                    step > stepInfo.number ? 'bg-primary-500' : 'bg-gray-200'
+                    step > stepInfo.number ? 'bg-green-500' : 'bg-gray-200'
                   }`} />
                 )}
               </div>

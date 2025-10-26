@@ -10,7 +10,42 @@
   }
   
   body {
-    @apply bg-gradient-to-br from-blue-50 via-white to-purple-50 min-h-screen;
+    @apply bg-gradient-to-br from-green-50 via-white to-emerald-50 min-h-screen;
+  }
+}
+
+@layer base {
+  :root {
+    /* Primary Colors - Green Theme */
+    --primary-50: #ECFDF5;
+    --primary-500: #10B981;
+    --primary-600: #059669;
+    --primary-700: #047857;
+    
+    /* Secondary Colors */
+    --secondary-500: #6366F1;
+    --secondary-600: #4F46E5;
+    
+    /* Status Colors */
+    --success: #10B981;
+    --warning: #F59E0B;
+    --danger: #EF4444;
+    --info: #3B82F6;
+    
+    /* Neutrals */
+    --gray-50: #F9FAFB;
+    --gray-100: #F3F4F6;
+    --gray-200: #E5E7EB;
+    --gray-500: #6B7280;
+    --gray-900: #111827;
+    
+    /* Spacing */
+    --space-xs: 4px;
+    --space-sm: 8px;
+    --space-md: 16px;
+    --space-lg: 24px;
+    --space-xl: 32px;
+    --space-2xl: 48px;
   }
 }
 
