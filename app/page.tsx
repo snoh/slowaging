@@ -175,10 +175,10 @@ export default function BiologicalAgeCalculator() {
             <span className="text-2xl font-bold gradient-text">SlowAge Journey</span>
           </div>
           <div className="hidden md:flex items-center space-x-6">
-            <a href="/" className="text-primary-600 font-semibold">생체 나이</a>
-            <a href="/missions" className="text-gray-600 hover:text-primary-600 transition-colors">미션</a>
-            <a href="/ar-simulator" className="text-gray-600 hover:text-primary-600 transition-colors">AR 시뮬레이터</a>
-            <a href="/community" className="text-gray-600 hover:text-primary-600 transition-colors">커뮤니티</a>
+            <a href="/" className="text-primary-600 font-semibold">건강 진단</a>
+            <a href="/missions" className="text-gray-600 hover:text-primary-600 transition-colors">일일 챌린지</a>
+            <a href="/ar-simulator" className="text-gray-600 hover:text-primary-600 transition-colors">미래 전망</a>
+            <a href="/community" className="text-gray-600 hover:text-primary-600 transition-colors">공유하기</a>
           </div>
         </div>
       </nav>
@@ -201,18 +201,23 @@ export default function BiologicalAgeCalculator() {
         {/* 진행 표시기 */}
         <div className="flex justify-center mb-8">
           <div className="flex items-center space-x-4">
-            {[1, 2, 3].map((stepNumber) => (
-              <div key={stepNumber} className="flex items-center">
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${
-                  step >= stepNumber 
-                    ? 'bg-primary-500 text-white' 
+            {[
+              { number: 1, label: '정보 입력', icon: '📋' },
+              { number: 2, label: '건강 측정', icon: '💊' },
+              { number: 3, label: '결과 확인', icon: '📊' }
+            ].map((stepInfo) => (
+              <div key={stepInfo.number} className="flex items-center">
+                <div className={`w-14 h-14 rounded-full flex flex-col items-center justify-center font-semibold transition-all ${
+                  step >= stepInfo.number 
+                    ? 'bg-primary-500 text-white scale-110' 
                     : 'bg-gray-200 text-gray-500'
                 }`}>
-                  {stepNumber}
+                  <span className="text-xl">{stepInfo.icon}</span>
+                  <span className="text-xs mt-1">{stepInfo.label}</span>
                 </div>
-                {stepNumber < 3 && (
-                  <div className={`w-16 h-1 mx-2 ${
-                    step > stepNumber ? 'bg-primary-500' : 'bg-gray-200'
+                {stepInfo.number < 3 && (
+                  <div className={`w-16 h-1 mx-2 transition-all ${
+                    step > stepInfo.number ? 'bg-primary-500' : 'bg-gray-200'
                   }`} />
                 )}
               </div>
