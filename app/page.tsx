@@ -196,17 +196,22 @@ export default function BiologicalAgeCalculator() {
         </motion.div>
 
         {/* 진행 표시기 - 개선 */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-semibold text-gray-600">단계</span>
-            <span className="text-lg font-bold text-primary-600">{step}/3 단계</span>
+        <div className="mb-8 bg-white rounded-xl p-4 shadow-lg">
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-semibold text-gray-600">진행 단계</span>
+            <span className="text-2xl font-bold text-green-600">{step}/3</span>
           </div>
-          <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+          <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden shadow-inner">
             <div 
-              className="h-full bg-gradient-to-r from-primary-500 to-primary-600 transition-all duration-500"
+              className="h-full bg-gradient-to-r from-green-500 to-green-600 transition-all duration-700 shadow-lg"
               style={{ width: `${(step / 3) * 100}%` }}
             />
           </div>
+          <p className="text-xs text-gray-500 mt-2 text-center">
+            {step === 1 && '1단계: 기본 정보 입력 중...'}
+            {step === 2 && '2단계: 생활습관 측정 중...'}
+            {step === 3 && '3단계: 결과 확인 중...'}
+          </p>
         </div>
 
         {/* 진행 단계 아이콘 */}
