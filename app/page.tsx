@@ -167,17 +167,12 @@ export default function BiologicalAgeCalculator() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
       {/* 네비게이션 */}
       <nav className="container mx-auto px-4 py-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-center">
           <div className="flex items-center space-x-2">
             <div className="w-10 h-10 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center">
               <Heart className="w-6 h-6 text-white" />
             </div>
             <span className="text-2xl font-bold gradient-text">SlowAge Journey</span>
-          </div>
-          <div className="hidden md:flex items-center space-x-6">
-            <a href="/" className="text-primary-600 font-semibold">나이측정</a>
-            <a href="/missions" className="text-gray-600 hover:text-primary-600 transition-colors">미션</a>
-            <a href="/ar-simulator" className="text-gray-600 hover:text-primary-600 transition-colors">전망</a>
           </div>
         </div>
       </nav>
