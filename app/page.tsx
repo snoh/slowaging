@@ -168,11 +168,11 @@ export default function BiologicalAgeCalculator() {
       {/* 네비게이션 */}
       <nav className="container mx-auto px-4 py-6">
         <div className="flex items-center justify-center">
-          <div className="flex items-center space-x-2">
-            <div className="w-10 h-10 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center">
-              <Heart className="w-6 h-6 text-white" />
+          <div className="flex items-center space-x-3">
+            <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
+              <Heart className="w-10 h-10 text-white" />
             </div>
-            <span className="text-2xl font-bold gradient-text">SlowAge Journey</span>
+            <span className="text-4xl font-bold text-green-600">SlowAge Journey</span>
           </div>
         </div>
       </nav>
