@@ -20,6 +20,8 @@ import {
   Moon
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import StreakWidget from '@/components/StreakWidget'
+import BadgeDisplay, { Badge } from '@/components/BadgeDisplay'
 
 interface Mission {
   id: string
@@ -39,9 +41,13 @@ interface UserProgress {
   level: number
   points: number
   streak: number
+  maxStreak: number
   totalMissions: number
   completedMissions: number
   badges: string[]
+  mindDietCount: number
+  exerciseCount: number
+  cheerCount: number
 }
 
 const missions: Mission[] = [
@@ -232,14 +238,53 @@ export default function DailyMissions() {
     level: 1,
     points: 0,
     streak: 0,
+    maxStreak: 0,
     totalMissions: missions.length,
     completedMissions: 0,
-    badges: []
+    badges: [],
+    mindDietCount: 0,
+    exerciseCount: 0,
+    cheerCount: 0
   })
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all')
   const [todaysMissions, setTodaysMissions] = useState<Mission[]>([])
   const [showCoaching, setShowCoaching] = useState(true)
+  const [showBadges, setShowBadges] = useState(false)
+
+  // 배지 정의
+  const badges: Badge[] = [
+    {
+      id: 'mind-diet-master',
+      name: 'MIND Diet 마스터',
+      description: '7일 연속 MIND Diet 목표 달성',
+      icon: 'mind-diet',
+      earned: userProgress.mindDietCount >= 7,
+      earnedDate: userProgress.mindDietCount >= 7 ? new Date().toLocaleDateString('ko-KR') : undefined,
+      progress: userProgress.mindDietCount,
+      requirement: 7
+    },
+    {
+      id: 'exercise-master',
+      name: '노화 저항군',
+      description: '30일 연속 운동 목표 달성',
+      icon: 'exercise-master',
+      earned: userProgress.exerciseCount >= 30,
+      earnedDate: userProgress.exerciseCount >= 30 ? new Date().toLocaleDateString('ko-KR') : undefined,
+      progress: userProgress.exerciseCount,
+      requirement: 30
+    },
+    {
+      id: 'community-leader',
+      name: '커뮤니티 리더',
+      description: '응원 횟수 10회 이상 획득',
+      icon: 'community-leader',
+      earned: userProgress.cheerCount >= 10,
+      earnedDate: userProgress.cheerCount >= 10 ? new Date().toLocaleDateString('ko-KR') : undefined,
+      progress: userProgress.cheerCount,
+      requirement: 10
+    }
+  ]
 
   // 오늘의 미션 선택 (AI 추천 로직)
   useEffect(() => {
@@ -254,11 +299,25 @@ export default function DailyMissions() {
     const mission = missions.find(m => m.id === missionId)
     if (!mission) return
 
+    const newStreak = userProgress.streak + 1
+    const newMaxStreak = Math.max(userProgress.maxStreak, newStreak)
+
+    // 카테고리별 카운트 증가
+    const categoryUpdates: Partial<UserProgress> = {}
+    if (mission.category === 'nutrition' && mission.title.includes('MIND')) {
+      categoryUpdates.mindDietCount = userProgress.mindDietCount + 1
+    }
+    if (mission.category === 'exercise') {
+      categoryUpdates.exerciseCount = userProgress.exerciseCount + 1
+    }
+
     setUserProgress(prev => ({
       ...prev,
       points: prev.points + mission.points,
       completedMissions: prev.completedMissions + 1,
-      streak: prev.streak + 1
+      streak: newStreak,
+      maxStreak: newMaxStreak,
+      ...categoryUpdates
     }))
 
     // 레벨업 체크
@@ -345,11 +404,52 @@ export default function DailyMissions() {
           </p>
         </motion.div>
 
+        {/* 스트릭 위젯 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="mb-8"
+        >
+          <StreakWidget
+            streak={userProgress.streak}
+            maxStreak={userProgress.maxStreak}
+            lastActivityDate={new Date().toLocaleDateString('ko-KR')}
+          />
+        </motion.div>
+
+        {/* 배지 섹션 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="card p-6 mb-8 shadow-xl rounded-xl"
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold flex items-center">
+              <Trophy className="w-5 h-5 text-yellow-500 mr-2" />
+              획득한 배지
+            </h3>
+            <button
+              onClick={() => setShowBadges(!showBadges)}
+              className="text-sm text-primary-600 hover:text-primary-700 font-semibold"
+            >
+              {showBadges ? '접기' : '모두 보기'}
+            </button>
+          </div>
+          {showBadges ? (
+            <BadgeDisplay badges={badges} />
+          ) : (
+            <BadgeDisplay badges={badges} compact />
+          )}
+        </motion.div>
+
         {/* 사용자 진행 상황 */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="card p-6 mb-8"
+          transition={{ delay: 0.2 }}
+          className="card p-6 mb-8 shadow-xl rounded-xl"
         >
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="text-center">
