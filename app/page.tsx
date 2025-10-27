@@ -611,13 +611,13 @@ export default function BiologicalAgeCalculator() {
                 </button>
                 <button
                   onClick={() => {
-                    // 일일 미션 페이지로 이동하면서 생체 나이 데이터 전달
+                    // 대시보드로 이동하면서 생체 나이 데이터 전달
                     localStorage.setItem('biologicalAgeResult', JSON.stringify({
                       biologicalAge: result.biologicalAge,
                       ageDifference: result.ageDifference,
                       healthScore: result.healthScore
                     }))
-                    window.location.href = '/slowaging/missions/'
+                    window.location.href = '/dashboard'
                   }}
                   className="btn-primary"
                 >
