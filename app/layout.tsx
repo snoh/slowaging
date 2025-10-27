@@ -1,9 +1,7 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
 import './globals.css'
 import { Toaster } from 'react-hot-toast'
-
-const inter = Inter({ subsets: ['latin'] })
+import { ClientLayout } from '@/components/ClientLayout'
 
 export const metadata: Metadata = {
   title: 'SlowAge Journey - 저속노화 체험형 플랫폼',
@@ -20,9 +18,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="ko">
-      <body className={inter.className}>
-        {children}
-        <Toaster 
+      <body className="font-sans">
+        <ClientLayout>
+          {children}
+        </ClientLayout>
+        <Toaster
           position="top-right"
           toastOptions={{
             duration: 3000,
