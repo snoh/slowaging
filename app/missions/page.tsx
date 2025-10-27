@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Target, 
-  Clock, 
-  Star, 
-  Trophy, 
-  Zap, 
-  CheckCircle, 
+import {
+  Target,
+  Clock,
+  Star,
+  Trophy,
+  Zap,
+  CheckCircle,
   PlayCircle,
   Award,
   TrendingUp,
@@ -17,9 +17,16 @@ import {
   Heart,
   Brain,
   Apple,
-  Moon
+  Moon,
+  Activity,
+  Sparkles,
+  Plus,
+  X
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar'
+import 'react-circular-progressbar/dist/styles.css'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 
 interface Mission {
   id: string
@@ -42,6 +49,28 @@ interface UserProgress {
   totalMissions: number
   completedMissions: number
   badges: string[]
+}
+
+interface DailyLog {
+  date: string
+  sunExposure: number // 햇볕 쬐기 (분)
+  exercise: number // 운동 시간 (분)
+  waterIntake: number // 물 섭취량 (L)
+  sleepQuality: number // 수면 질 (1-10)
+  stressLevel: number // 스트레스 (1-10)
+  skinCare: boolean // 피부 관리 여부
+}
+
+interface QuickWin {
+  id: string
+  title: string
+  category: 'vitality' | 'sleep' | 'skin'
+  currentScore: number
+  previousScore: number
+  percentChange: number
+  feedback: string
+  weeklyData: { day: string; score: number }[]
+  icon: React.ReactNode
 }
 
 const missions: Mission[] = [
@@ -241,6 +270,103 @@ export default function DailyMissions() {
   const [todaysMissions, setTodaysMissions] = useState<Mission[]>([])
   const [showCoaching, setShowCoaching] = useState(true)
 
+  // 새로운 상태들
+  const [slowAgeScore, setSlowAgeScore] = useState(78) // 예시: 78점/100점
+  const [biologicalAge, setBiologicalAge] = useState<number | null>(null)
+  const [actualAge, setActualAge] = useState(40) // 실제 나이
+  const [showDailyLogModal, setShowDailyLogModal] = useState(false)
+  const [dailyLogs, setDailyLogs] = useState<DailyLog[]>([])
+  const [currentLog, setCurrentLog] = useState<DailyLog>({
+    date: new Date().toISOString().split('T')[0],
+    sunExposure: 20,
+    exercise: 30,
+    waterIntake: 2,
+    sleepQuality: 7,
+    stressLevel: 5,
+    skinCare: true
+  })
+  const [quickWins, setQuickWins] = useState<QuickWin[]>([
+    {
+      id: 'vitality',
+      title: '오늘 활력 점수',
+      category: 'vitality',
+      currentScore: 8.5,
+      previousScore: 7.4,
+      percentChange: 15,
+      feedback: '어제보다 15% 증가! 20분간의 햇볕 쬐기가 즉각적인 활력을 주었습니다.',
+      weeklyData: [
+        { day: '월', score: 6.8 },
+        { day: '화', score: 7.2 },
+        { day: '수', score: 7.0 },
+        { day: '목', score: 7.4 },
+        { day: '금', score: 7.8 },
+        { day: '토', score: 8.0 },
+        { day: '일', score: 8.5 }
+      ],
+      icon: <Zap className="w-6 h-6" />
+    },
+    {
+      id: 'sleep',
+      title: '수면 질 점수',
+      category: 'sleep',
+      currentScore: 7.8,
+      previousScore: 7.0,
+      percentChange: 11,
+      feedback: '수면 질이 11% 개선! 11시 전 취침이 깊은 수면을 가져왔습니다.',
+      weeklyData: [
+        { day: '월', score: 6.5 },
+        { day: '화', score: 6.8 },
+        { day: '수', score: 7.0 },
+        { day: '목', score: 7.2 },
+        { day: '금', score: 7.0 },
+        { day: '토', score: 7.5 },
+        { day: '일', score: 7.8 }
+      ],
+      icon: <Moon className="w-6 h-6" />
+    },
+    {
+      id: 'skin',
+      title: '피부 개선 점수',
+      category: 'skin',
+      currentScore: 8.2,
+      previousScore: 7.8,
+      percentChange: 5,
+      feedback: '피부 상태가 5% 개선! 충분한 수분 섭취와 항산화 식단이 효과를 보이고 있습니다.',
+      weeklyData: [
+        { day: '월', score: 7.5 },
+        { day: '화', score: 7.6 },
+        { day: '수', score: 7.8 },
+        { day: '목', score: 7.8 },
+        { day: '금', score: 8.0 },
+        { day: '토', score: 8.1 },
+        { day: '일', score: 8.2 }
+      ],
+      icon: <Sparkles className="w-6 h-6" />
+    }
+  ])
+
+  // localStorage에서 생체 나이 데이터 불러오기
+  useEffect(() => {
+    const savedResult = localStorage.getItem('biologicalAgeResult')
+    if (savedResult) {
+      const result = JSON.parse(savedResult)
+      setBiologicalAge(result.biologicalAge)
+      setSlowAgeScore(result.healthScore)
+      // actualAge는 biologicalAge + ageDifference로 계산
+      setActualAge(result.biologicalAge - result.ageDifference)
+    }
+  }, [])
+
+  // 대사 나이 계산 (Score에 따라)
+  const calculateMetabolicAge = () => {
+    if (biologicalAge !== null) {
+      return biologicalAge
+    }
+    // Score 기반 계산: 78점 -> 실제 나이 40세보다 5살 어림
+    const ageDifference = Math.round((100 - slowAgeScore) / 4) // 100점 = 0살 차이, 0점 = 25살 차이
+    return Math.max(actualAge - ageDifference, 20) // 최소 20세
+  }
+
   // 오늘의 미션 선택 (AI 추천 로직)
   useEffect(() => {
     const getTodaysMissions = () => {
@@ -249,6 +375,78 @@ export default function DailyMissions() {
     }
     setTodaysMissions(getTodaysMissions())
   }, [])
+
+  // 일일 기록 제출 핸들러
+  const handleDailyLogSubmit = () => {
+    // 로그 저장
+    setDailyLogs(prev => [...prev, currentLog])
+
+    // Quick Wins 점수 업데이트
+    setQuickWins(prev => prev.map(qw => {
+      let newScore = qw.currentScore
+      let newWeeklyData = [...qw.weeklyData]
+
+      if (qw.category === 'vitality') {
+        // 활력 점수 계산: 햇볕 + 운동
+        const vitalityScore = (currentLog.sunExposure / 30) * 5 + (currentLog.exercise / 60) * 5
+        newScore = Math.min(10, vitalityScore)
+        newWeeklyData = [...newWeeklyData.slice(1), { day: '오늘', score: newScore }]
+      } else if (qw.category === 'sleep') {
+        // 수면 질 점수
+        newScore = currentLog.sleepQuality
+        newWeeklyData = [...newWeeklyData.slice(1), { day: '오늘', score: newScore }]
+      } else if (qw.category === 'skin') {
+        // 피부 개선 점수: 수분 섭취 + 스킨케어
+        const skinScore = (currentLog.waterIntake / 2) * 4 + (currentLog.skinCare ? 4 : 0) + (10 - currentLog.stressLevel) * 0.2
+        newScore = Math.min(10, skinScore)
+        newWeeklyData = [...newWeeklyData.slice(1), { day: '오늘', score: newScore }]
+      }
+
+      const percentChange = Math.round(((newScore - qw.previousScore) / qw.previousScore) * 100)
+
+      return {
+        ...qw,
+        previousScore: qw.currentScore,
+        currentScore: newScore,
+        percentChange,
+        weeklyData: newWeeklyData,
+        feedback: generateFeedback(qw.category, percentChange, currentLog)
+      }
+    }))
+
+    setShowDailyLogModal(false)
+    toast.success('일일 기록이 저장되었습니다! 핵심 성과가 업데이트되었어요.')
+  }
+
+  // 피드백 메시지 생성
+  const generateFeedback = (category: string, percentChange: number, log: DailyLog) => {
+    if (category === 'vitality') {
+      if (percentChange > 10) {
+        return `어제보다 ${percentChange}% 증가! ${log.sunExposure}분간의 햇볕 쬐기가 즉각적인 활력을 주었습니다.`
+      } else if (percentChange > 0) {
+        return `활력이 ${percentChange}% 증가했어요. 꾸준한 운동이 효과를 보이고 있습니다!`
+      } else {
+        return '오늘은 조금 더 활동적인 하루를 보내보세요. 20분 걷기부터 시작해보는 건 어떨까요?'
+      }
+    } else if (category === 'sleep') {
+      if (log.sleepQuality >= 8) {
+        return `수면 질이 ${percentChange}% 개선! 11시 전 취침이 깊은 수면을 가져왔습니다.`
+      } else if (log.sleepQuality >= 6) {
+        return '수면 질이 적정 수준이에요. 취침 시간을 조금 더 앞당겨보세요.'
+      } else {
+        return '수면 질이 낮아요. 취침 1시간 전 스마트폰을 멀리하고 명상을 시도해보세요.'
+      }
+    } else if (category === 'skin') {
+      if (log.waterIntake >= 2 && log.skinCare) {
+        return `피부 상태가 ${percentChange}% 개선! 충분한 수분 섭취와 스킨케어가 효과를 보이고 있습니다.`
+      } else if (log.waterIntake < 2) {
+        return '피부 건강을 위해 물을 더 마셔보세요. 하루 2L가 목표입니다.'
+      } else {
+        return '꾸준한 스킨케어가 피부 나이를 젊게 유지합니다.'
+      }
+    }
+    return '좋은 습관을 유지하고 있어요!'
+  }
 
   const completeMission = (missionId: string) => {
     const mission = missions.find(m => m.id === missionId)
@@ -262,10 +460,10 @@ export default function DailyMissions() {
     }))
 
     // 레벨업 체크
-    const newLevel = Object.keys(levelSystem).reverse().find(level => 
+    const newLevel = Object.keys(levelSystem).reverse().find(level =>
       userProgress.points + mission.points >= levelSystem[parseInt(level) as keyof typeof levelSystem].points
     )
-    
+
     if (newLevel && parseInt(newLevel) > userProgress.level) {
       const levelNum = parseInt(newLevel) as keyof typeof levelSystem
       toast.success(`레벨업! ${levelSystem[levelNum].title}이 되었어요! 🎉`)
@@ -273,7 +471,7 @@ export default function DailyMissions() {
     }
 
     // 미션 완료 표시
-    setTodaysMissions(prev => 
+    setTodaysMissions(prev =>
       prev.map(m => m.id === missionId ? { ...m, completed: true } : m)
     )
 
@@ -282,7 +480,7 @@ export default function DailyMissions() {
     const randomMessage = messages[Math.floor(Math.random() * messages.length)]
       .replace('{points}', mission.points.toString())
       .replace('{age}', '2.5')
-    
+
     toast.success(randomMessage)
   }
 
@@ -397,6 +595,137 @@ export default function DailyMissions() {
                 }}
               />
             </div>
+          </div>
+        </motion.div>
+
+        {/* 대사 나이 섹션 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="card p-8 mb-8 bg-gradient-to-br from-green-50 to-emerald-50"
+        >
+          <h2 className="text-2xl font-bold mb-6 text-center">대사 나이</h2>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8">
+            <div className="w-48 h-48">
+              <CircularProgressbar
+                value={slowAgeScore}
+                text={`${calculateMetabolicAge()}세`}
+                styles={buildStyles({
+                  textSize: '20px',
+                  pathColor: slowAgeScore >= 70 ? '#10B981' : slowAgeScore >= 50 ? '#F59E0B' : '#EF4444',
+                  textColor: '#1F2937',
+                  trailColor: '#E5E7EB',
+                  pathTransitionDuration: 1
+                })}
+              />
+            </div>
+            <div className="flex-1 text-center md:text-left">
+              <h3 className="text-3xl font-bold text-green-600 mb-2">
+                현재 대사 나이: {calculateMetabolicAge()}세
+              </h3>
+              <p className="text-lg text-gray-700 mb-4">
+                실제 나이 {actualAge}세보다 <span className="font-bold text-green-600">{actualAge - calculateMetabolicAge()}살 어립니다!</span>
+              </p>
+              <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
+                <div className="text-sm text-gray-600">건강 점수:</div>
+                <div className="text-2xl font-bold text-green-600">{slowAgeScore}점/100점</div>
+              </div>
+              <p className="text-sm text-gray-600">
+                꾸준한 실천으로 대사 나이를 더욱 젊게 유지하세요!
+              </p>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* 핵심 성과 (Quick Wins) 섹션 */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold">핵심 성과 (Quick Wins)</h2>
+            <button
+              onClick={() => setShowDailyLogModal(true)}
+              className="btn-primary flex items-center gap-2"
+            >
+              <Plus className="w-5 h-5" />
+              일일 기록 입력
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {quickWins.map((qw, index) => (
+              <motion.div
+                key={qw.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+                className="card p-6 bg-gradient-to-br from-white to-blue-50"
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white">
+                      {qw.icon}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-800">{qw.title}</h3>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mb-4">
+                  <div className="flex items-end gap-2 mb-2">
+                    <div className="text-4xl font-bold text-blue-600">
+                      {qw.currentScore.toFixed(1)}
+                    </div>
+                    <div className="text-xl text-gray-500 mb-1">/10</div>
+                    <div className={`ml-auto text-sm font-semibold px-2 py-1 rounded-full ${
+                      qw.percentChange > 0 ? 'bg-green-100 text-green-700' :
+                      qw.percentChange < 0 ? 'bg-red-100 text-red-700' :
+                      'bg-gray-100 text-gray-700'
+                    }`}>
+                      {qw.percentChange > 0 ? '+' : ''}{qw.percentChange}%
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-600">{qw.feedback}</p>
+                </div>
+
+                {/* 미니 라인 차트 */}
+                <div className="h-32">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={qw.weeklyData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                      <XAxis
+                        dataKey="day"
+                        tick={{ fontSize: 12 }}
+                        stroke="#9CA3AF"
+                      />
+                      <YAxis
+                        domain={[0, 10]}
+                        tick={{ fontSize: 12 }}
+                        stroke="#9CA3AF"
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: '#FFF',
+                          border: '1px solid #E5E7EB',
+                          borderRadius: '8px'
+                        }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="score"
+                        stroke="#3B82F6"
+                        strokeWidth={2}
+                        dot={{ fill: '#3B82F6', r: 4 }}
+                        activeDot={{ r: 6 }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </motion.div>
 
@@ -563,6 +892,164 @@ export default function DailyMissions() {
           </motion.div>
         )}
       </div>
+
+      {/* 일일 기록 입력 모달 */}
+      <AnimatePresence>
+        {showDailyLogModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+            onClick={() => setShowDailyLogModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold">일일 기록 입력</h2>
+                <button
+                  onClick={() => setShowDailyLogModal(false)}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                {/* 햇볕 쬐기 */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    햇볕 쬐기 (분): {currentLog.sunExposure}분
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="60"
+                    value={currentLog.sunExposure}
+                    onChange={(e) => setCurrentLog({ ...currentLog, sunExposure: parseInt(e.target.value) })}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>0분</span>
+                    <span>60분</span>
+                  </div>
+                </div>
+
+                {/* 운동 시간 */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    운동 시간 (분): {currentLog.exercise}분
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="120"
+                    value={currentLog.exercise}
+                    onChange={(e) => setCurrentLog({ ...currentLog, exercise: parseInt(e.target.value) })}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>0분</span>
+                    <span>120분</span>
+                  </div>
+                </div>
+
+                {/* 물 섭취량 */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    물 섭취량 (L): {currentLog.waterIntake}L
+                  </label>
+                  <input
+                    type="range"
+                    min="0"
+                    max="4"
+                    step="0.1"
+                    value={currentLog.waterIntake}
+                    onChange={(e) => setCurrentLog({ ...currentLog, waterIntake: parseFloat(e.target.value) })}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>0L</span>
+                    <span>4L</span>
+                  </div>
+                </div>
+
+                {/* 수면 질 */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    수면 질: {currentLog.sleepQuality}/10
+                  </label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    value={currentLog.sleepQuality}
+                    onChange={(e) => setCurrentLog({ ...currentLog, sleepQuality: parseInt(e.target.value) })}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>매우 나쁨</span>
+                    <span>매우 좋음</span>
+                  </div>
+                </div>
+
+                {/* 스트레스 수준 */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    스트레스 수준: {currentLog.stressLevel}/10
+                  </label>
+                  <input
+                    type="range"
+                    min="1"
+                    max="10"
+                    value={currentLog.stressLevel}
+                    onChange={(e) => setCurrentLog({ ...currentLog, stressLevel: parseInt(e.target.value) })}
+                    className="w-full"
+                  />
+                  <div className="flex justify-between text-xs text-gray-500 mt-1">
+                    <span>매우 낮음</span>
+                    <span>매우 높음</span>
+                  </div>
+                </div>
+
+                {/* 피부 관리 */}
+                <div>
+                  <label className="flex items-center space-x-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={currentLog.skinCare}
+                      onChange={(e) => setCurrentLog({ ...currentLog, skinCare: e.target.checked })}
+                      className="w-5 h-5 text-primary-600 rounded"
+                    />
+                    <span className="text-sm font-semibold text-gray-700">오늘 피부 관리를 했나요?</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* 액션 버튼 */}
+              <div className="flex gap-4 mt-8">
+                <button
+                  onClick={() => setShowDailyLogModal(false)}
+                  className="flex-1 px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors font-semibold"
+                >
+                  취소
+                </button>
+                <button
+                  onClick={handleDailyLogSubmit}
+                  className="flex-1 btn-primary"
+                >
+                  저장하기
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
