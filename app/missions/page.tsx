@@ -227,7 +227,27 @@ const coachingMessages = {
   ]
 }
 
+// MIND Diet items based on Morris et al., 2015
+interface DietItem {
+  id: string
+  name: string
+  description: string
+  frequency: string
+  checked: boolean
+}
+
+// Exercise tracker based on Werner et al., 2019
+interface ExerciseTracker {
+  type: 'endurance' | 'interval' | 'resistance'
+  name: string
+  description: string
+  weeklyGoal: number // minutes
+  currentProgress: number // minutes
+  color: string
+}
+
 export default function DailyMissions() {
+  const [activeTab, setActiveTab] = useState<'missions' | 'action-plan'>('missions')
   const [userProgress, setUserProgress] = useState<UserProgress>({
     level: 1,
     points: 0,
@@ -240,6 +260,45 @@ export default function DailyMissions() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all')
   const [todaysMissions, setTodaysMissions] = useState<Mission[]>([])
   const [showCoaching, setShowCoaching] = useState(true)
+
+  // Action Plan states
+  const [slowAgeScoreHistory, setSlowAgeScoreHistory] = useState<number[]>([85, 83, 82, 80, 78]) // Example history
+  const [mindDietChecklist, setMindDietChecklist] = useState<DietItem[]>([
+    { id: 'd1', name: '녹색 잎채소', description: '시금치, 케일, 상추 등', frequency: '매일 1회 이상', checked: false },
+    { id: 'd2', name: '베리류', description: '블루베리, 딸기, 라즈베리', frequency: '주 2회 이상', checked: false },
+    { id: 'd3', name: '견과류', description: '호두, 아몬드 등', frequency: '주 5회 이상', checked: false },
+    { id: 'd4', name: '통곡물', description: '현미, 귀리, 통밀빵', frequency: '매일 3회 이상', checked: false },
+    { id: 'd5', name: '생선', description: '연어, 고등어 등 오메가-3 풍부', frequency: '주 1회 이상', checked: false },
+    { id: 'd6', name: '콩류', description: '검은콩, 렌틸콩, 병아리콩', frequency: '주 3회 이상', checked: false },
+    { id: 'd7', name: '가금류', description: '닭고기, 칠면조', frequency: '주 2회 이상', checked: false },
+    { id: 'd8', name: '올리브 오일', description: '주된 식용유로 사용', frequency: '매일 사용', checked: false },
+  ])
+  const [exerciseTrackers, setExerciseTrackers] = useState<ExerciseTracker[]>([
+    {
+      type: 'endurance',
+      name: '지구력 운동',
+      description: '걷기, 조깅, 자전거 타기, 수영 등 유산소 운동',
+      weeklyGoal: 150,
+      currentProgress: 0,
+      color: 'bg-blue-500'
+    },
+    {
+      type: 'interval',
+      name: '고강도 인터벌 운동',
+      description: 'HIIT, 스프린트, 인터벌 러닝 등',
+      weeklyGoal: 75,
+      currentProgress: 0,
+      color: 'bg-orange-500'
+    },
+    {
+      type: 'resistance',
+      name: '저항성 운동',
+      description: '웨이트 트레이닝, 체중 운동, 근력 운동',
+      weeklyGoal: 150,
+      currentProgress: 0,
+      color: 'bg-purple-500'
+    },
+  ])
 
   // 오늘의 미션 선택 (AI 추천 로직)
   useEffect(() => {
@@ -292,6 +351,65 @@ export default function DailyMissions() {
     return categoryMatch && difficultyMatch
   })
 
+  // Action Plan helper functions
+  const getScoreTrend = () => {
+    if (slowAgeScoreHistory.length < 2) return 'improving'
+    const recentScores = slowAgeScoreHistory.slice(-3)
+    const isImproving = recentScores.every((score, i) =>
+      i === 0 || score <= recentScores[i - 1]
+    )
+    const isDecreasing = recentScores.every((score, i) =>
+      i === 0 || score >= recentScores[i - 1]
+    )
+
+    if (isImproving) return 'improving'
+    if (isDecreasing) return 'declining'
+    return 'stagnant'
+  }
+
+  const getStrategicMessage = () => {
+    const trend = getScoreTrend()
+
+    if (trend === 'improving') {
+      return {
+        type: 'gain',
+        title: '미래 건강 자산을 쌓고 있습니다',
+        message: '매일 30분의 걷기 습관이 5년 후 당신의 **대사 나이를 10살 낮춥니다.** 현재의 작은 노력이 미래의 큰 건강 이득으로 이어집니다.',
+        bgColor: 'bg-gradient-to-r from-green-50 to-emerald-50',
+        borderColor: 'border-green-500',
+        textColor: 'text-green-800'
+      }
+    } else {
+      return {
+        type: 'loss',
+        title: '건강 자산을 지키세요',
+        message: '지금 운동을 멈추면, **근육량이 1개월 만에 10% 줄어듭니다.** 노력을 유지하지 않으면 당신의 건강 자산을 잃게 됩니다.',
+        bgColor: 'bg-gradient-to-r from-red-50 to-orange-50',
+        borderColor: 'border-red-500',
+        textColor: 'text-red-800'
+      }
+    }
+  }
+
+  const toggleDietItem = (id: string) => {
+    setMindDietChecklist(prev =>
+      prev.map(item =>
+        item.id === id ? { ...item, checked: !item.checked } : item
+      )
+    )
+  }
+
+  const updateExerciseProgress = (type: string, minutes: number) => {
+    setExerciseTrackers(prev =>
+      prev.map(tracker =>
+        tracker.type === type
+          ? { ...tracker, currentProgress: Math.min(tracker.currentProgress + minutes, tracker.weeklyGoal) }
+          : tracker
+      )
+    )
+    toast.success(`${minutes}분 추가되었습니다!`)
+  }
+
   const getCategoryIcon = (category: string) => {
     switch (category) {
       case 'nutrition': return <Apple className="w-5 h-5" />
@@ -332,25 +450,60 @@ export default function DailyMissions() {
 
       <div className="container mx-auto px-4 max-w-6xl">
         {/* 헤더 */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
           <h1 className="text-4xl font-bold gradient-text mb-4">
-            일일 미션
+            {activeTab === 'missions' ? '일일 미션' : 'Action Plan (맞춤 계획)'}
           </h1>
           <p className="text-gray-600 text-lg">
-            습관 루프 이론 기반 저속노화 실천 미션
+            {activeTab === 'missions'
+              ? '습관 루프 이론 기반 저속노화 실천 미션'
+              : '증거 기반 식단 및 운동 추적 시스템'}
           </p>
         </motion.div>
 
-        {/* 사용자 진행 상황 */}
+        {/* Tab Navigation */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="card p-6 mb-8"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex justify-center mb-8"
         >
+          <div className="card p-2 inline-flex space-x-2">
+            <button
+              onClick={() => setActiveTab('missions')}
+              className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
+                activeTab === 'missions'
+                  ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-lg'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              일일 미션
+            </button>
+            <button
+              onClick={() => setActiveTab('action-plan')}
+              className={`px-6 py-3 rounded-lg font-semibold transition-all duration-300 ${
+                activeTab === 'action-plan'
+                  ? 'bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-lg'
+                  : 'text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              맞춤 계획
+            </button>
+          </div>
+        </motion.div>
+
+        {/* Missions Tab Content */}
+        {activeTab === 'missions' && (
+          <>
+            {/* 사용자 진행 상황 */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="card p-6 mb-8"
+            >
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="text-center">
               <div className={`text-3xl font-bold mb-2 ${levelSystem[userProgress.level as keyof typeof levelSystem].color}`}>
@@ -561,6 +714,206 @@ export default function DailyMissions() {
               </div>
             </div>
           </motion.div>
+        )}
+          </>
+        )}
+
+        {/* Action Plan Tab Content */}
+        {activeTab === 'action-plan' && (
+          <>
+            {/* Strategic Framing System - Dynamic Message Box */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className={`card p-8 mb-8 ${getStrategicMessage().bgColor} border-l-8 ${getStrategicMessage().borderColor}`}
+            >
+              <div className="flex items-start space-x-4">
+                <div className={`w-16 h-16 rounded-full flex items-center justify-center ${
+                  getScoreTrend() === 'improving' ? 'bg-green-500' : 'bg-red-500'
+                }`}>
+                  {getScoreTrend() === 'improving' ? (
+                    <TrendingUp className="w-8 h-8 text-white" />
+                  ) : (
+                    <Target className="w-8 h-8 text-white" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <h2 className={`text-2xl font-bold mb-3 ${getStrategicMessage().textColor}`}>
+                    {getStrategicMessage().title}
+                  </h2>
+                  <p className={`text-lg leading-relaxed ${getStrategicMessage().textColor}`}>
+                    {getStrategicMessage().message}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* MIND Diet Checklist - Morris et al., 2015 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="card p-8 mb-8"
+            >
+              <div className="flex items-center mb-6">
+                <Apple className="w-8 h-8 text-green-600 mr-3" />
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-800">MIND 식단 계획</h2>
+                  <p className="text-sm text-gray-600 mt-1">
+                    알츠하이머 위험 53% 감소, 뇌 나이 7.5년 젊게 유지 (Morris et al., 2015)
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {mindDietChecklist.map((item, index) => (
+                  <motion.div
+                    key={item.id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    onClick={() => toggleDietItem(item.id)}
+                    className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-300 ${
+                      item.checked
+                        ? 'bg-green-50 border-green-500 shadow-md'
+                        : 'bg-white border-gray-200 hover:border-green-300'
+                    }`}
+                  >
+                    <div className="flex items-center">
+                      <div
+                        className={`w-7 h-7 rounded-full flex items-center justify-center mr-4 transition-all duration-300 ${
+                          item.checked ? 'bg-green-500' : 'bg-gray-200'
+                        }`}
+                      >
+                        {item.checked && <CheckCircle className="w-5 h-5 text-white" />}
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-gray-800 text-lg">{item.name}</h3>
+                        <p className="text-sm text-gray-600">{item.description}</p>
+                        <div className="flex items-center mt-1">
+                          <Clock className="w-3 h-3 text-gray-500 mr-1" />
+                          <span className="text-xs text-gray-500">{item.frequency}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              <div className="mt-6 p-4 bg-blue-50 rounded-lg">
+                <div className="flex items-center justify-between">
+                  <span className="font-semibold text-gray-800">일일 목표 달성률</span>
+                  <span className="text-2xl font-bold text-blue-600">
+                    {Math.round((mindDietChecklist.filter(item => item.checked).length / mindDietChecklist.length) * 100)}%
+                  </span>
+                </div>
+                <div className="progress-bar mt-2">
+                  <div
+                    className="progress-fill bg-gradient-to-r from-green-400 to-green-600"
+                    style={{
+                      width: `${(mindDietChecklist.filter(item => item.checked).length / mindDietChecklist.length) * 100}%`
+                    }}
+                  />
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Exercise Tracker - Werner et al., 2019 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="card p-8"
+            >
+              <div className="flex items-center mb-6">
+                <TrendingUp className="w-8 h-8 text-blue-600 mr-3" />
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-800">운동 계획 추적</h2>
+                  <p className="text-sm text-gray-600 mt-1">
+                    텔로미어 보존으로 생체 나이 9세 젊게 유지 (Werner et al., 2019)
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                {exerciseTrackers.map((tracker, index) => (
+                  <motion.div
+                    key={tracker.type}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="p-6 bg-gradient-to-br from-white to-gray-50 rounded-xl border-2 border-gray-200 hover:border-primary-300 transition-all duration-300"
+                  >
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center">
+                        <div className={`w-12 h-12 ${tracker.color} rounded-xl flex items-center justify-center mr-4`}>
+                          <Zap className="w-7 h-7 text-white" />
+                        </div>
+                        <div>
+                          <h3 className="text-xl font-bold text-gray-800">{tracker.name}</h3>
+                          <p className="text-sm text-gray-600">{tracker.description}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mb-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-sm font-semibold text-gray-700">주간 진행률</span>
+                        <span className="text-lg font-bold text-gray-800">
+                          {tracker.currentProgress} / {tracker.weeklyGoal}분
+                        </span>
+                      </div>
+                      <div className="progress-bar">
+                        <div
+                          className={`progress-fill ${tracker.color.replace('bg-', 'bg-gradient-to-r from-')} to-${tracker.color.split('-')[1]}-400`}
+                          style={{
+                            width: `${(tracker.currentProgress / tracker.weeklyGoal) * 100}%`
+                          }}
+                        />
+                      </div>
+                      <div className="text-xs text-gray-500 mt-1">
+                        {Math.round((tracker.currentProgress / tracker.weeklyGoal) * 100)}% 달성
+                      </div>
+                    </div>
+
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => updateExerciseProgress(tracker.type, 15)}
+                        className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold transition-all duration-300"
+                      >
+                        +15분
+                      </button>
+                      <button
+                        onClick={() => updateExerciseProgress(tracker.type, 30)}
+                        className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold transition-all duration-300"
+                      >
+                        +30분
+                      </button>
+                      <button
+                        onClick={() => updateExerciseProgress(tracker.type, 60)}
+                        className="flex-1 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg font-semibold transition-all duration-300"
+                      >
+                        +60분
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              <div className="mt-8 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border-2 border-purple-200">
+                <h3 className="text-lg font-bold text-gray-800 mb-3 flex items-center">
+                  <Award className="w-6 h-6 text-purple-600 mr-2" />
+                  주간 총 운동 시간
+                </h3>
+                <div className="text-4xl font-bold text-purple-600 mb-2">
+                  {exerciseTrackers.reduce((sum, tracker) => sum + tracker.currentProgress, 0)}분
+                </div>
+                <p className="text-sm text-gray-600">
+                  권장 목표: {exerciseTrackers.reduce((sum, tracker) => sum + tracker.weeklyGoal, 0)}분
+                </p>
+              </div>
+            </motion.div>
+          </>
         )}
       </div>
     </div>
