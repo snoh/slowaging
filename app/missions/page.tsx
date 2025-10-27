@@ -228,6 +228,8 @@ const coachingMessages = {
 }
 
 export default function DailyMissions() {
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'missions'>('dashboard')
+  const [biologicalAgeData, setBiologicalAgeData] = useState<any>(null)
   const [userProgress, setUserProgress] = useState<UserProgress>({
     level: 1,
     points: 0,
@@ -240,6 +242,14 @@ export default function DailyMissions() {
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all')
   const [todaysMissions, setTodaysMissions] = useState<Mission[]>([])
   const [showCoaching, setShowCoaching] = useState(true)
+
+  // localStorage에서 생체 나이 데이터 가져오기
+  useEffect(() => {
+    const storedData = localStorage.getItem('biologicalAgeResult')
+    if (storedData) {
+      setBiologicalAgeData(JSON.parse(storedData))
+    }
+  }, [])
 
   // 오늘의 미션 선택 (AI 추천 로직)
   useEffect(() => {
@@ -332,19 +342,180 @@ export default function DailyMissions() {
 
       <div className="container mx-auto px-4 max-w-6xl">
         {/* 헤더 */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
           <h1 className="text-4xl font-bold gradient-text mb-4">
-            일일 미션
+            저속노화 여정
           </h1>
           <p className="text-gray-600 text-lg">
-            습관 루프 이론 기반 저속노화 실천 미션
+            나의 건강 대시보드와 실천 미션
           </p>
         </motion.div>
 
+        {/* 탭 네비게이션 */}
+        <div className="flex justify-center mb-8">
+          <div className="inline-flex bg-white rounded-xl p-1 shadow-md">
+            <button
+              onClick={() => setActiveTab('dashboard')}
+              className={`px-8 py-3 rounded-lg font-semibold transition-all duration-300 ${
+                activeTab === 'dashboard'
+                  ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg'
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              Dashboard
+            </button>
+            <button
+              onClick={() => setActiveTab('missions')}
+              className={`px-8 py-3 rounded-lg font-semibold transition-all duration-300 ${
+                activeTab === 'missions'
+                  ? 'bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg'
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              일일 미션
+            </button>
+          </div>
+        </div>
+
+        {/* Dashboard 탭 컨텐츠 */}
+        {activeTab === 'dashboard' && (
+          <div>
+            {/* 핵심 성과 (Quick Wins) 섹션 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-8"
+            >
+              <h2 className="text-2xl font-bold mb-6 text-gray-800">
+                핵심 성과 (Quick Wins)
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* 활력 카드 */}
+                <div className="card p-6 bg-gradient-to-br from-yellow-50 to-orange-50 border-2 border-yellow-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-12 h-12 bg-yellow-400 rounded-full flex items-center justify-center">
+                      <Zap className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="text-2xl font-bold text-yellow-600">+25%</div>
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2 text-gray-800">활력</h3>
+                  <p className="text-sm text-gray-600">
+                    에너지 수준 향상으로 더 활기찬 하루를 보내고 있어요
+                  </p>
+                </div>
+
+                {/* 수면 질 카드 */}
+                <div className="card p-6 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-12 h-12 bg-blue-400 rounded-full flex items-center justify-center">
+                      <Moon className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="text-2xl font-bold text-blue-600">+30%</div>
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2 text-gray-800">수면 질</h3>
+                  <p className="text-sm text-gray-600">
+                    깊은 수면으로 더 나은 휴식과 회복을 경험하고 있어요
+                  </p>
+                </div>
+
+                {/* 피부 개선 카드 */}
+                <div className="card p-6 bg-gradient-to-br from-pink-50 to-rose-50 border-2 border-pink-200">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="w-12 h-12 bg-pink-400 rounded-full flex items-center justify-center">
+                      <Star className="w-6 h-6 text-white" />
+                    </div>
+                    <div className="text-2xl font-bold text-pink-600">+20%</div>
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2 text-gray-800">피부 개선</h3>
+                  <p className="text-sm text-gray-600">
+                    피부 탄력과 광채가 개선되어 더 젊어 보여요
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* 대사 나이 원형 차트 섹션 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="card p-12 mb-8"
+            >
+              <h2 className="text-3xl font-bold mb-8 text-center gradient-text">
+                대사 나이 (Metabolic Age)
+              </h2>
+
+              {/* 원형 차트 Placeholder */}
+              <div className="flex justify-center mb-8">
+                <div className="relative w-80 h-80">
+                  {/* 외부 원 */}
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
+                    {/* 내부 원 */}
+                    <div className="w-64 h-64 rounded-full bg-white flex flex-col items-center justify-center shadow-inner">
+                      <div className="text-6xl font-bold text-green-600 mb-2">
+                        {biologicalAgeData?.biologicalAge || 35}
+                      </div>
+                      <div className="text-xl text-gray-600">세</div>
+                      <div className="text-sm text-gray-500 mt-2">대사 나이</div>
+                    </div>
+                  </div>
+
+                  {/* 장식 요소 */}
+                  <div className="absolute -top-4 -right-4 w-16 h-16 bg-green-500 rounded-full flex items-center justify-center shadow-lg">
+                    <Heart className="w-8 h-8 text-white" />
+                  </div>
+                </div>
+              </div>
+
+              {/* 실제 나이 vs 목표 나이 비교 */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
+                <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
+                  <div className="text-sm text-gray-600 mb-2">실제 나이</div>
+                  <div className="text-4xl font-bold text-blue-600 mb-1">
+                    {biologicalAgeData ? (biologicalAgeData.biologicalAge - biologicalAgeData.ageDifference) : 40}세
+                  </div>
+                  <div className="text-xs text-gray-500">현재 나이</div>
+                </div>
+
+                <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
+                  <div className="text-sm text-gray-600 mb-2">목표 나이</div>
+                  <div className="text-4xl font-bold text-purple-600 mb-1">30세</div>
+                  <div className="text-xs text-gray-500">저속노화 목표</div>
+                </div>
+              </div>
+
+              {/* 진행 상황 */}
+              <div className="mt-8 max-w-2xl mx-auto">
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm font-semibold text-gray-700">목표 달성률</span>
+                  <span className="text-sm text-gray-600">
+                    {biologicalAgeData
+                      ? Math.max(0, Math.min(100, Math.round((1 - (biologicalAgeData.biologicalAge - 30) / ((biologicalAgeData.biologicalAge - biologicalAgeData.ageDifference) - 30)) * 100)))
+                      : 25}%
+                  </span>
+                </div>
+                <div className="progress-bar">
+                  <div
+                    className="progress-fill"
+                    style={{
+                      width: `${biologicalAgeData
+                        ? Math.max(0, Math.min(100, Math.round((1 - (biologicalAgeData.biologicalAge - 30) / ((biologicalAgeData.biologicalAge - biologicalAgeData.ageDifference) - 30)) * 100)))
+                        : 25}%`
+                    }}
+                  />
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+
+        {/* 일일 미션 탭 컨텐츠 */}
+        {activeTab === 'missions' && (
+          <div>
         {/* 사용자 진행 상황 */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
@@ -561,6 +732,8 @@ export default function DailyMissions() {
               </div>
             </div>
           </motion.div>
+        )}
+          </div>
         )}
       </div>
     </div>
