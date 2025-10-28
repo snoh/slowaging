@@ -164,9 +164,9 @@ export default function BiologicalAgeCalculator() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8 flex flex-col items-center">
       {/* 네비게이션 */}
-      <nav className="container mx-auto px-4 py-6">
+      <nav className="w-full max-w-7xl mx-auto px-4 py-6">
         <div className="flex items-center justify-center">
           <div className="flex items-center space-x-3">
             <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
@@ -177,7 +177,7 @@ export default function BiologicalAgeCalculator() {
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 max-w-4xl">
+      <div className="w-full max-w-4xl mx-auto px-4">
         {/* 헤더 */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}

@@ -56,9 +56,9 @@ export default function HomePage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col items-center">
       {/* 헤더 */}
-      <header className="container mx-auto px-4 py-6">
+      <header className="w-full max-w-7xl mx-auto px-4 py-6">
         <nav className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <div className="w-10 h-10 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center">
@@ -84,7 +84,7 @@ export default function HomePage() {
       </header>
 
       {/* 히어로 섹션 */}
-      <section className="container mx-auto px-4 py-16">
+      <section className="w-full max-w-7xl mx-auto px-4 py-16">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -231,7 +231,7 @@ export default function HomePage() {
       </section>
 
       {/* 푸터 */}
-      <footer className="container mx-auto px-4 py-8 mt-16 border-t border-gray-200">
+      <footer className="w-full max-w-7xl mx-auto px-4 py-8 mt-16 border-t border-gray-200">
         <div className="text-center text-gray-600">
           <p className="mb-2">© 2024 SlowAge Journey. All rights reserved.</p>
           <p className="text-sm">

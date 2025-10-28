@@ -8,9 +8,17 @@
   html {
     font-family: 'Pretendard', system-ui, sans-serif;
   }
-  
+
   body {
     @apply bg-gradient-to-br from-emerald-100 via-green-50 to-emerald-50 min-h-screen;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  * {
+    box-sizing: border-box;
   }
 }
 
