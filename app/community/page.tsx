@@ -148,9 +148,9 @@ export default function Community() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8 flex flex-col items-center">
       {/* 네비게이션 */}
-      <nav className="container mx-auto px-4 py-6">
+      <nav className="w-full max-w-7xl mx-auto px-4 py-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <div className="w-10 h-10 bg-gradient-to-r from-primary-500 to-secondary-500 rounded-xl flex items-center justify-center shadow-lg">
@@ -167,7 +167,7 @@ export default function Community() {
         </div>
       </nav>
 
-      <div className="container mx-auto px-4 max-w-4xl">
+      <div className="w-full max-w-4xl mx-auto px-4">
         {/* 헤더 */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
