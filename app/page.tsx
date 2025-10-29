@@ -164,7 +164,7 @@ export default function BiologicalAgeCalculator() {
   }
 
   return (
-    <div className="page-container bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 py-8">
+    <div className="page-container bg-gray-100 py-8 min-h-screen">
       {/* 네비게이션 */}
       <nav className="w-full max-w-7xl mx-auto px-4 py-6">
         <div className="flex items-center justify-center">
@@ -177,96 +177,75 @@ export default function BiologicalAgeCalculator() {
         </div>
       </nav>
 
-      <div className="w-full max-w-4xl mx-auto px-4">
+      <div className="w-full max-w-[420px] mx-auto px-4">
         {/* ━━━━━━━━━━━━━━━━━━━━━━ */}
         {/* [1단] 히어로 섹션 - 상단 고정 */}
         {/* ━━━━━━━━━━━━━━━━━━━━━━ */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8 bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-10 shadow-lg border-2 border-green-100"
+          className="text-center mb-4 bg-gradient-to-br from-green-100 to-emerald-100 rounded-2xl p-8 shadow-md"
         >
-        <h1 className="text-5xl font-bold text-green-700 mb-6 leading-relaxed">
-          🌱 나를 더 건강하게 만드는 작은 시작
+        <div className="text-5xl mb-4">🌱</div>
+        <h1 className="text-3xl font-bold text-green-800 mb-6 leading-relaxed">
+          나를 더 건강하게 만드는<br/>작은 시작
         </h1>
-        <p className="text-gray-700 text-2xl mb-4 leading-loose">
+        <p className="text-gray-700 text-base mb-4 leading-relaxed">
           당신의 몸은 매일 당신이 어떻게 살아왔는지<br/>
           이야기하고 있어요
         </p>
-        <p className="text-gray-600 text-xl leading-loose">
+        <p className="text-gray-600 text-sm leading-relaxed">
           오늘부터 시작하는<br/>
           나만의 웰니스 여정을 함께 해볼까요?
         </p>
         </motion.div>
 
         {/* ━━━━━━━━━━━━━━━━━━━━━━ */}
-        {/* [2단] 진행 상황 카드 */}
+        {/* [2단] 진행 상황 카드 - 간소화 */}
         {/* ━━━━━━━━━━━━━━━━━━━━━━ */}
-        <div className="mb-8 bg-white rounded-2xl p-8 shadow-xl border border-gray-100">
-          {/* 제목 */}
-          <div className="text-center mb-6">
-            <h3 className="text-2xl font-bold text-gray-800 mb-2">🗺️ 당신의 건강 여정</h3>
-            <p className="text-gray-500 text-sm">3단계로 완성되는 맞춤형 분석</p>
-          </div>
+        <div className="mb-4 bg-white rounded-2xl p-6 shadow-md">
+          <div className="text-center mb-5">
+            <h3 className="text-lg font-bold text-gray-800 mb-4">🗺️ 건강 여정</h3>
 
-          {/* 프로그레스 바 */}
-          <div className="mb-6">
-            <div className="flex items-center justify-center mb-3 space-x-2">
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
-                step >= 1 ? 'bg-green-500 text-white scale-110' : 'bg-gray-200 text-gray-400'
-              }`}>1</div>
-              <div className={`h-2 w-20 rounded-full transition-all ${
+            {/* 심플 프로그레스 바 */}
+            <div className="flex items-center justify-center mb-5 space-x-2">
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
+                step >= 1 ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-400'
+              }`}>●</div>
+              <div className={`h-1 w-16 transition-all ${
                 step >= 2 ? 'bg-green-500' : 'bg-gray-200'
               }`}></div>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
-                step >= 2 ? 'bg-green-500 text-white scale-110' : 'bg-gray-200 text-gray-400'
-              }`}>2</div>
-              <div className={`h-2 w-20 rounded-full transition-all ${
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
+                step >= 2 ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-400'
+              }`}>●</div>
+              <div className={`h-1 w-16 transition-all ${
                 step >= 3 ? 'bg-green-500' : 'bg-gray-200'
               }`}></div>
-              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
-                step >= 3 ? 'bg-green-500 text-white scale-110' : 'bg-gray-200 text-gray-400'
-              }`}>3</div>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold transition-all ${
+                step >= 3 ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-400'
+              }`}>●</div>
             </div>
-            <div className="text-center text-sm font-semibold text-green-600">
-              {step}/3 단계
-            </div>
-          </div>
 
-          {/* 단계 아이콘과 설명 */}
-          <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className={`text-center p-4 rounded-xl transition-all ${
-              step === 1 ? 'bg-green-50 border-2 border-green-300 scale-105' : 'bg-gray-50'
-            }`}>
-              <div className="text-3xl mb-2">📋</div>
-              <div className="font-semibold text-sm text-gray-700">정보 입력</div>
-              {step === 1 && <div className="text-xs text-green-600 mt-1">← 지금 여기</div>}
+            {/* 아이콘 라벨 */}
+            <div className="flex justify-between items-center text-xs">
+              <div className={`flex-1 ${step === 1 ? 'text-green-600 font-bold' : 'text-gray-400'}`}>
+                <div className="text-2xl mb-1">📋</div>
+                <div>정보입력</div>
+                {step === 1 && <div className="text-green-600 mt-1">← 지금</div>}
+              </div>
+              <div className={`flex-1 ${step === 2 ? 'text-green-600 font-bold' : 'text-gray-400'}`}>
+                <div className="text-2xl mb-1">💊</div>
+                <div>측정</div>
+                {step === 2 && <div className="text-green-600 mt-1">← 지금</div>}
+                {step === 1 && <div className="text-gray-400 mt-1">다음</div>}
+              </div>
+              <div className={`flex-1 ${step === 3 ? 'text-green-600 font-bold' : 'text-gray-400'}`}>
+                <div className="text-2xl mb-1">📊</div>
+                <div>결과</div>
+                {step === 3 && <div className="text-green-600 mt-1">← 지금</div>}
+                {step < 3 && <div className="text-gray-400 mt-1">마지막</div>}
+              </div>
             </div>
-            <div className={`text-center p-4 rounded-xl transition-all ${
-              step === 2 ? 'bg-green-50 border-2 border-green-300 scale-105' : 'bg-gray-50'
-            }`}>
-              <div className="text-3xl mb-2">💊</div>
-              <div className="font-semibold text-sm text-gray-700">건강 측정</div>
-              {step === 2 && <div className="text-xs text-green-600 mt-1">← 지금 여기</div>}
-              {step === 1 && <div className="text-xs text-gray-400 mt-1">다음 단계</div>}
-            </div>
-            <div className={`text-center p-4 rounded-xl transition-all ${
-              step === 3 ? 'bg-green-50 border-2 border-green-300 scale-105' : 'bg-gray-50'
-            }`}>
-              <div className="text-3xl mb-2">📊</div>
-              <div className="font-semibold text-sm text-gray-700">결과 확인</div>
-              {step === 3 && <div className="text-xs text-green-600 mt-1">← 지금 여기</div>}
-              {step < 3 && <div className="text-xs text-gray-400 mt-1">마지막</div>}
-            </div>
-          </div>
-
-          {/* 현재 단계 안내 */}
-          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 text-center border border-green-200">
-            <p className="text-gray-700 font-medium">
-              {step === 1 && '📋 지금 단계: 기본 정보를 알려주세요'}
-              {step === 2 && '💊 지금 단계: 생활습관을 측정해요'}
-              {step === 3 && '📊 지금 단계: 결과를 확인하세요'}
-            </p>
           </div>
         </div>
 
@@ -281,51 +260,51 @@ export default function BiologicalAgeCalculator() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="card p-8"
+              className="bg-white rounded-2xl p-6 shadow-md"
             >
-              {/* 제목 개선 */}
-              <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-gray-800 mb-3">
+              {/* 제목 */}
+              <div className="text-center mb-6">
+                <h2 className="text-xl font-bold text-gray-800 mb-2">
                   정확한 분석을 위해<br/>
                   몇 가지만 알려주세요
                 </h2>
-                <p className="text-gray-500 text-sm">입력하신 정보는 안전하게 보관되며, 분석에만 사용됩니다</p>
+                <p className="text-gray-500 text-xs">안전하게 보관되며 분석에만 사용됩니다</p>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-5">
                 {/* 실제 나이 */}
-                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-green-200">
-                  <label className="flex items-center text-base font-bold text-gray-800 mb-2">
+                <div>
+                  <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
                     <span className="mr-2">🎂</span>
                     실제 나이
                   </label>
-                  <p className="text-sm text-gray-600 mb-3">더 정확한 생체 나이 분석을 위해 필요해요</p>
+                  <p className="text-xs text-gray-500 mb-2">더 정확한 생체 나이 분석을 위해 필요해요</p>
                   <input
                     type="number"
                     value={healthData.age}
                     onChange={(e) => setHealthData({...healthData, age: parseInt(e.target.value)})}
-                    className="w-full p-4 text-lg font-semibold border-2 border-green-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white"
+                    className="w-full p-3 text-base border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white transition-all"
                     min="18"
                     max="100"
                     placeholder="예: 30"
                   />
                 </div>
 
-                {/* 성별 선택 - 버튼 형식 */}
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-200">
-                  <label className="flex items-center text-base font-bold text-gray-800 mb-2">
+                {/* 성별 선택 - 토글 버튼 */}
+                <div>
+                  <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
                     <span className="mr-2">👤</span>
                     성별
                   </label>
-                  <p className="text-sm text-gray-600 mb-3">성별에 따라 기준 수치가 달라져요</p>
-                  <div className="grid grid-cols-2 gap-4">
+                  <p className="text-xs text-gray-500 mb-2">성별에 따라 기준 수치가 달라져요</p>
+                  <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
                       onClick={() => setHealthData({...healthData, gender: 'male'})}
-                      className={`p-6 rounded-xl font-bold text-lg transition-all ${
+                      className={`p-3 rounded-full font-semibold text-sm transition-all ${
                         healthData.gender === 'male'
-                          ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg scale-105'
-                          : 'bg-white border-2 border-gray-300 text-gray-600 hover:border-blue-500'
+                          ? 'bg-green-500 text-white shadow-md'
+                          : 'bg-white border-2 border-gray-200 text-gray-600'
                       }`}
                     >
                       👨 남성
@@ -333,10 +312,10 @@ export default function BiologicalAgeCalculator() {
                     <button
                       type="button"
                       onClick={() => setHealthData({...healthData, gender: 'female'})}
-                      className={`p-6 rounded-xl font-bold text-lg transition-all ${
+                      className={`p-3 rounded-full font-semibold text-sm transition-all ${
                         healthData.gender === 'female'
-                          ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white shadow-lg scale-105'
-                          : 'bg-white border-2 border-gray-300 text-gray-600 hover:border-pink-500'
+                          ? 'bg-green-500 text-white shadow-md'
+                          : 'bg-white border-2 border-gray-200 text-gray-600'
                       }`}
                     >
                       👩 여성
@@ -345,17 +324,17 @@ export default function BiologicalAgeCalculator() {
                 </div>
 
                 {/* 체중 */}
-                <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-6 border-2 border-orange-200">
-                  <label className="flex items-center text-base font-bold text-gray-800 mb-2">
+                <div>
+                  <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
                     <span className="mr-2">⚖️</span>
                     체중 (kg)
                   </label>
-                  <p className="text-sm text-gray-600 mb-3">현재 몸 상태를 파악하는데 사용돼요</p>
+                  <p className="text-xs text-gray-500 mb-2">현재 몸 상태를 파악하는데 사용돼요</p>
                   <input
                     type="number"
                     value={healthData.weight}
                     onChange={(e) => setHealthData({...healthData, weight: parseInt(e.target.value)})}
-                    className="w-full p-4 text-lg font-semibold border-2 border-orange-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white"
+                    className="w-full p-3 text-base border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white transition-all"
                     min="30"
                     max="200"
                     placeholder="예: 70"
@@ -363,57 +342,58 @@ export default function BiologicalAgeCalculator() {
                 </div>
 
                 {/* 키 */}
-                <div className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-xl p-6 border-2 border-purple-200">
-                  <label className="flex items-center text-base font-bold text-gray-800 mb-2">
+                <div>
+                  <label className="flex items-center text-sm font-semibold text-gray-700 mb-2">
                     <span className="mr-2">📏</span>
                     키 (cm)
                   </label>
-                  <p className="text-sm text-gray-600 mb-3">BMI 계산에 사용돼요</p>
+                  <p className="text-xs text-gray-500 mb-2">BMI 계산에 사용돼요</p>
                   <input
                     type="number"
                     value={healthData.height}
                     onChange={(e) => setHealthData({...healthData, height: parseInt(e.target.value)})}
-                    className="w-full p-4 text-lg font-semibold border-2 border-purple-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white"
+                    className="w-full p-3 text-base border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white transition-all"
                     min="120"
                     max="220"
                     placeholder="예: 170"
                   />
-                  {healthData.weight && healthData.height && (
-                    <div className="mt-4 p-4 bg-white rounded-lg border border-purple-200">
-                      <div className="flex items-center justify-between mb-2">
-                        <p className="text-sm font-semibold text-gray-700">BMI 지수</p>
-                        <p className="text-2xl font-bold text-gray-800">{((healthData.weight / ((healthData.height / 100) ** 2)).toFixed(1))}</p>
-                      </div>
-                      <div className="mt-2 h-3 bg-gray-200 rounded-full overflow-hidden">
-                        <div
-                          className="h-full transition-all duration-300"
-                          style={{
-                            width: `${Math.min(((healthData.weight / ((healthData.height / 100) ** 2) - 15) / 15) * 100, 100)}%`,
-                            backgroundColor: ((healthData.weight / ((healthData.height / 100) ** 2)) < 18.5) ? '#F59E0B' : ((healthData.weight / ((healthData.height / 100) ** 2)) < 25) ? '#10B981' : '#EF4444'
-                          }}
-                        />
-                      </div>
-                      <p className="text-xs text-gray-500 mt-2 text-center">
-                        {((healthData.weight / ((healthData.height / 100) ** 2)) < 18.5) && '저체중'}
-                        {((healthData.weight / ((healthData.height / 100) ** 2)) >= 18.5 && (healthData.weight / ((healthData.height / 100) ** 2)) < 25) && '정상 범위 ✨'}
-                        {((healthData.weight / ((healthData.height / 100) ** 2)) >= 25) && '과체중'}
-                      </p>
-                    </div>
-                  )}
                 </div>
+
+                {/* BMI 표시 */}
+                {healthData.weight && healthData.height && (
+                  <div className="mt-2 pt-5 border-t-2 border-gray-100">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-sm font-semibold text-gray-700">💚 BMI 지수</p>
+                      <p className="text-2xl font-bold text-green-600">{((healthData.weight / ((healthData.height / 100) ** 2)).toFixed(1))}</p>
+                    </div>
+                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div
+                        className="h-full transition-all duration-300"
+                        style={{
+                          width: `${Math.min(((healthData.weight / ((healthData.height / 100) ** 2) - 15) / 15) * 100, 100)}%`,
+                          backgroundColor: ((healthData.weight / ((healthData.height / 100) ** 2)) < 18.5) ? '#F59E0B' : ((healthData.weight / ((healthData.height / 100) ** 2)) < 25) ? '#10B981' : '#EF4444'
+                        }}
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-2 text-center">
+                      {((healthData.weight / ((healthData.height / 100) ** 2)) < 18.5) && '저체중'}
+                      {((healthData.weight / ((healthData.height / 100) ** 2)) >= 18.5 && (healthData.weight / ((healthData.height / 100) ** 2)) < 25) && '정상 범위 ✨'}
+                      {((healthData.weight / ((healthData.height / 100) ** 2)) >= 25) && '과체중'}
+                    </p>
+                  </div>
+                )}
               </div>
 
-              <div className="mt-8 flex flex-col items-center gap-4">
+              <div className="mt-8 flex flex-col gap-3">
                 <button
                   onClick={() => setStep(2)}
-                  className="btn-primary text-xl px-16 py-5 shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all"
+                  className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white font-bold text-base py-4 px-6 rounded-full shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all"
                 >
-                  <span className="flex items-center gap-3">
-                    <span>다음: 생활습관 측정하기</span>
-                    <span className="text-2xl">💊</span>
+                  <span className="flex items-center justify-center gap-2">
+                    <span>다음: 💊 생활습관 측정하기</span>
                   </span>
                 </button>
-                <p className="text-sm text-gray-500">
+                <p className="text-xs text-gray-500 text-center">
                   2단계에서는 식습관과 운동량을 확인합니다
                 </p>
               </div>
