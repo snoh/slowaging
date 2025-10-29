@@ -164,13 +164,13 @@ export default function BiologicalAgeCalculator() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8 flex flex-col items-center">
+    <div className="page-container bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 py-8">
       {/* 네비게이션 */}
       <nav className="w-full max-w-7xl mx-auto px-4 py-6">
         <div className="flex items-center justify-center">
           <div className="flex items-center space-x-3">
-            <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Heart className="w-10 h-10 text-white" />
+            <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg">
+              <span className="text-4xl">🌱</span>
             </div>
             <span className="text-4xl font-bold text-green-600">SlowAge Journey</span>
           </div>
@@ -179,19 +179,21 @@ export default function BiologicalAgeCalculator() {
 
       <div className="w-full max-w-4xl mx-auto px-4">
         {/* 헤더 */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
+          className="text-center mb-12"
         >
-        <h1 className="text-4xl font-bold gradient-text mb-4">
-          생체 나이 계산기
+        <h1 className="text-5xl font-bold text-green-700 mb-8 leading-relaxed">
+          🌱 나를 더 건강하게 만드는 작은 시작
         </h1>
-        <p className="text-gray-600 text-lg mb-2">
-          당신의 실제 나이와 생체 나이를 비교해보세요
+        <p className="text-gray-700 text-2xl mb-6 leading-loose">
+          당신의 몸은 매일 당신이 어떻게 살아왔는지<br/>
+          이야기하고 있어요
         </p>
-        <p className="text-gray-500 text-sm">
-          생활습관을 입력하면 과학적 근거 기반으로 생체 나이를 계산해드립니다
+        <p className="text-gray-600 text-xl leading-loose">
+          오늘부터 시작하는<br/>
+          나만의 웰니스 여정을 함께 해볼까요?
         </p>
         </motion.div>
 
@@ -352,12 +354,12 @@ export default function BiologicalAgeCalculator() {
                 </div>
               </div>
 
-              <div className="mt-6 flex justify-end">
+              <div className="mt-6 flex justify-center">
                 <button
                   onClick={() => setStep(2)}
-                  className="btn-primary"
+                  className="btn-primary text-xl px-12 py-4"
                 >
-                  다음 단계
+                  시작하기
                 </button>
               </div>
             </motion.div>

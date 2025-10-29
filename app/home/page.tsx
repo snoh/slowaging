@@ -56,7 +56,7 @@ export default function HomePage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col items-center">
+    <div className="page-container bg-gradient-to-br from-blue-50 via-white to-purple-50">
       {/* 헤더 */}
       <header className="w-full max-w-7xl mx-auto px-4 py-6">
         <nav className="flex items-center justify-between">

@@ -148,7 +148,7 @@ export default function Community() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8 flex flex-col items-center">
+    <div className="page-container bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
       {/* 네비게이션 */}
       <nav className="w-full max-w-7xl mx-auto px-4 py-6">
         <div className="flex items-center justify-between">
