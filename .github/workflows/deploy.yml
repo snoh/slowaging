@@ -7,8 +7,6 @@ on:
 
 jobs:
   build:
-  jobs:
-  build:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -33,20 +31,6 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./out
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: npm
-      - run: npm ci
-      - run: npm run build
-        env:
-          DEPLOY_TARGET: github-pages
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./out
 
   deploy:
     needs: build
@@ -58,3 +42,4 @@ jobs:
       name: github-pages
     steps:
       - uses: actions/deploy-pages@v4
+
