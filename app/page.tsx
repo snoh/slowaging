@@ -164,12 +164,12 @@ export default function BiologicalAgeCalculator() {
   }
 
   return (
-    <div className="page-container min-h-screen">
+    <>
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       {/* [섹션 1] 히어로 - 그린 그라데이션 */}
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section className="w-full" style={{ background: 'linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%)' }}>
-        <div className="max-w-[480px] mx-auto px-6 py-[60px]">
+      <section className="w-full" style={{ background: 'linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%)', padding: '60px 24px' }}>
+        <div className="max-w-[480px] mx-auto">
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -194,8 +194,8 @@ export default function BiologicalAgeCalculator() {
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       {/* [섹션 2] 진행 상황 - 화이트 */}
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section className="w-full bg-white">
-        <div className="max-w-[480px] mx-auto px-6 py-8">
+      <section className="w-full bg-white" style={{ padding: '40px 24px' }}>
+        <div className="max-w-[480px] mx-auto">
           <div className="text-center">
             <h3 className="text-lg font-bold text-gray-800 mb-6">🗺️ 건강 여정</h3>
 
@@ -245,8 +245,8 @@ export default function BiologicalAgeCalculator() {
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       {/* [섹션 3] 입력 폼 - 연회색블루 배경 */}
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section className="w-full" style={{ backgroundColor: '#F5F7FA' }}>
-        <div className="max-w-[480px] mx-auto px-6 py-8">
+      <section className="w-full" style={{ backgroundColor: '#F5F7FA', padding: '48px 24px' }}>
+        <div className="max-w-[480px] mx-auto">
           <AnimatePresence mode="wait">
             {/* 1단계: 기본 정보 */}
             {step === 1 && (
@@ -387,8 +387,8 @@ export default function BiologicalAgeCalculator() {
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       {/* [섹션 4] 버튼 - 화이트 배경 */}
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
-      <section className="w-full bg-white">
-        <div className="max-w-[480px] mx-auto px-6 py-6">
+      <section className="w-full bg-white" style={{ padding: '32px 24px 64px' }}>
+        <div className="max-w-[480px] mx-auto">
           <AnimatePresence mode="wait">
             {step === 1 && (
               <motion.div
@@ -475,8 +475,8 @@ export default function BiologicalAgeCalculator() {
       {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
       <AnimatePresence mode="wait">
         {step === 2 && (
-          <section className="w-full" style={{ backgroundColor: '#F5F7FA' }}>
-            <div className="max-w-[480px] mx-auto px-6 py-8">
+          <section className="w-full" style={{ backgroundColor: '#F5F7FA', padding: '48px 24px' }}>
+            <div className="max-w-[480px] mx-auto">
               <motion.div
                 key="step2-content"
                 initial={{ opacity: 0, x: 20 }}
@@ -601,8 +601,8 @@ export default function BiologicalAgeCalculator() {
 
         {/* 3단계: 결과 */}
         {step === 3 && result && (
-          <section className="w-full" style={{ backgroundColor: '#F5F7FA' }}>
-            <div className="max-w-[480px] mx-auto px-6 py-8">
+          <section className="w-full" style={{ backgroundColor: '#F5F7FA', padding: '48px 24px' }}>
+            <div className="max-w-[480px] mx-auto">
               <motion.div
                 key="step3-content"
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -708,8 +708,8 @@ export default function BiologicalAgeCalculator() {
 
         {/* 계산 중 로딩 */}
         {isCalculating && (
-          <section className="w-full" style={{ backgroundColor: '#F5F7FA' }}>
-            <div className="max-w-[480px] mx-auto px-6 py-8">
+          <section className="w-full" style={{ backgroundColor: '#F5F7FA', padding: '48px 24px' }}>
+            <div className="max-w-[480px] mx-auto">
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -723,6 +723,6 @@ export default function BiologicalAgeCalculator() {
           </section>
         )}
       </AnimatePresence>
-    </div>
+    </>
   )
 }
