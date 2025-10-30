@@ -1,304 +1,357 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { Calculator, Heart, Brain, Zap, Clock, TrendingUp, AlertCircle } from 'lucide-react'
-import toast from 'react-hot-toast'
+import { useState } from 'react'
+import { motion } from 'framer-motion'
 
 interface HealthData {
+  // 기본 정보
   age: number
   gender: 'male' | 'female'
   weight: number
   height: number
-  exerciseFrequency: number // 주당 운동 횟수
-  sleepHours: number
-  stressLevel: number // 1-10 스케일
-  smoking: boolean
-  drinking: boolean
-  dietQuality: number // 1-10 스케일
-  meditation: boolean
-}
-
-interface BiologicalAgeResult {
-  biologicalAge: number
-  ageDifference: number
-  healthScore: number
-  recommendations: string[]
-  riskFactors: string[]
+  // 생활습관
+  sleep: string
+  exercise: string
+  meal: string
+  stress: number
+  alcohol: string
+  smoking: string
 }
 
 export default function BiologicalAgeCalculator() {
-  const [step, setStep] = useState(1)
+  const [currentSlide, setCurrentSlide] = useState(1)
   const [healthData, setHealthData] = useState<HealthData>({
+    // 기본 정보
     age: 30,
     gender: 'male',
     weight: 70,
     height: 170,
-    exerciseFrequency: 3,
-    sleepHours: 7,
-    stressLevel: 5,
-    smoking: false,
-    drinking: false,
-    dietQuality: 6,
-    meditation: false,
+    // 생활습관 (기본값)
+    sleep: '',
+    exercise: '',
+    meal: '',
+    stress: 3,
+    alcohol: '',
+    smoking: '',
   })
-  const [result, setResult] = useState<BiologicalAgeResult | null>(null)
-  const [isCalculating, setIsCalculating] = useState(false)
 
-  const calculateBiologicalAge = (data: HealthData): BiologicalAgeResult => {
-    let biologicalAge = data.age
-    let healthScore = 100
-    const recommendations: string[] = []
-    const riskFactors: string[] = []
-
-    // 운동 요인 (European Heart Journal 2019 근거)
-    if (data.exerciseFrequency < 2) {
-      biologicalAge += 2.0 // 좌식 생활
-      healthScore -= 15
-      recommendations.push('주 3회 이상 유산소 운동을 시작하세요 (텔로미어 보존 효과)')
-      riskFactors.push('운동 부족')
-    } else if (data.exerciseFrequency >= 3) {
-      biologicalAge -= 1.5 // 주 3회 유산소
-      healthScore += 10
-    }
-    
-    if (data.exerciseFrequency >= 5) {
-      biologicalAge -= 1.0 // 근력운동 추가 효과
-      healthScore += 5
-    }
-
-    // 수면 요인 (수면과학 연구 근거)
-    if (data.sleepHours < 6) {
-      biologicalAge += 2.0 // 6시간 미만
-      healthScore -= 12
-      recommendations.push('하루 7-9시간 충분한 수면을 취하세요 (세포 재생 촉진)')
-      riskFactors.push('수면 부족')
-    } else if (data.sleepHours >= 7 && data.sleepHours <= 9) {
-      biologicalAge -= 1.0 // 최적 수면
-      healthScore += 8
-    }
-
-    // 스트레스 요인 (Stanford University 연구 근거)
-    if (data.stressLevel > 7) {
-      biologicalAge += 1.5 // 고스트레스
-      healthScore -= 10
-      recommendations.push('명상이나 마음챙김으로 스트레스를 관리하세요 (코르티솔 25% 감소)')
-      riskFactors.push('높은 스트레스')
-    } else if (data.stressLevel < 4) {
-      biologicalAge -= 0.5
-      healthScore += 5
-    }
-
-    // 흡연 요인 (WHO 연구 근거)
-    if (data.smoking) {
-      biologicalAge += 5.0 // 흡연
-      healthScore -= 20
-      recommendations.push('금연을 시작하세요 (생체 나이 5세 즉시 개선)')
-      riskFactors.push('흡연')
-    }
-
-    // 음주 요인 (주 1회당)
-    if (data.drinking) {
-      biologicalAge += 0.3
-      healthScore -= 8
-      recommendations.push('음주량을 줄이거나 금주하세요')
-      riskFactors.push('과음')
-    }
-
-    // 식단 품질 (MIND 식단 연구 근거)
-    if (data.dietQuality < 5) {
-      biologicalAge += 3.0 // 가공식품 섭취
-      healthScore -= 10
-      recommendations.push('MIND 식단을 실천하세요 (알츠하이머 위험 53% 감소)')
-      riskFactors.push('불균형한 식단')
-    } else if (data.dietQuality >= 8) {
-      biologicalAge -= 2.5 // MIND 식단 실천
-      healthScore += 15
-    } else if (data.dietQuality >= 6) {
-      biologicalAge -= 1.0 // 채소 5접시
-      healthScore += 8
-    }
-
-    // 명상 실천 (Stanford 연구 근거)
-    if (data.meditation) {
-      biologicalAge -= 0.5 // 명상 실천
-      healthScore += 5
-    } else {
-      recommendations.push('하루 10분 명상을 시작해보세요 (스트레스 호르몬 감소)')
-    }
-
-    return {
-      biologicalAge: Math.round(biologicalAge),
-      ageDifference: Math.round(biologicalAge - data.age),
-      healthScore: Math.max(0, Math.min(100, healthScore)),
-      recommendations,
-      riskFactors,
-    }
+  const calculateBMI = () => {
+    if (!healthData.weight || !healthData.height) return 0
+    return (healthData.weight / ((healthData.height / 100) ** 2)).toFixed(1)
   }
 
-  const handleCalculate = async () => {
-    setIsCalculating(true)
-    
-    // 계산 시뮬레이션 (실제로는 더 복잡한 알고리즘 사용)
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    const calculatedResult = calculateBiologicalAge(healthData)
-    setResult(calculatedResult)
-    setIsCalculating(false)
-    setStep(3)
-    
-    // 결과에 따른 토스트 메시지
-    if (calculatedResult.ageDifference > 0) {
-      toast.error(`생체 나이가 실제 나이보다 ${calculatedResult.ageDifference}세 많습니다!`)
-    } else if (calculatedResult.ageDifference < 0) {
-      toast.success(`생체 나이가 실제 나이보다 ${Math.abs(calculatedResult.ageDifference)}세 적습니다!`)
-    } else {
-      toast.success('생체 나이와 실제 나이가 같습니다!')
-    }
+  // 생체나이 계산 함수
+  const calculateBiologicalAge = () => {
+    let bioAge = healthData.age // 실제 나이부터 시작
+
+    // 수면 시간 평가
+    if (healthData.sleep === '5시간 이하') bioAge += 3
+    else if (healthData.sleep === '7-8시간') bioAge -= 2
+
+    // 운동 빈도 평가
+    if (healthData.exercise === '거의 안함') bioAge += 2
+    else if (healthData.exercise === '주 5회 이상') bioAge -= 3
+
+    // 식습관 평가
+    if (healthData.meal === '불규칙적') bioAge += 2
+    else if (healthData.meal === '규칙적 3끼') bioAge -= 1
+
+    // 스트레스 수준 평가
+    if (healthData.stress >= 4) bioAge += 2
+    else if (healthData.stress <= 2) bioAge -= 1
+
+    // 음주 빈도 평가
+    if (healthData.alcohol === '주 3회 이상') bioAge += 2
+    else if (healthData.alcohol === '안 마심') bioAge -= 1
+
+    // 흡연 상태 평가
+    if (healthData.smoking === '현재 흡연') bioAge += 5
+    else if (healthData.smoking === '비흡연') bioAge -= 1
+
+    return Math.max(18, bioAge) // 최소 18세
   }
 
-  const resetCalculator = () => {
-    setStep(1)
-    setResult(null)
-    setIsCalculating(false)
+  // 생체나이와 실제 나이 차이 계산
+  const getAgeDifference = () => {
+    return calculateBiologicalAge() - healthData.age
+  }
+
+  // 등급 계산 (차이값 기준)
+  const getGrade = () => {
+    const diff = getAgeDifference()
+    if (diff <= -5) return { label: '우수', color: '#10B981', emoji: '🌟' }
+    if (diff <= 0) return { label: '양호', color: '#3B82F6', emoji: '😊' }
+    if (diff <= 5) return { label: '보통', color: '#F59E0B', emoji: '😐' }
+    return { label: '주의', color: '#EF4444', emoji: '⚠️' }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8 flex flex-col items-center">
-      {/* 네비게이션 */}
-      <nav className="w-full max-w-7xl mx-auto px-4 py-6">
-        <div className="flex items-center justify-center">
-          <div className="flex items-center space-x-3">
-            <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center shadow-lg">
-              <Heart className="w-10 h-10 text-white" />
-            </div>
-            <span className="text-4xl font-bold text-green-600">SlowAge Journey</span>
-          </div>
-        </div>
-      </nav>
+    <div style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100vw',
+      height: '100vh',
+      overflow: 'hidden'
+    }}>
+      <div style={{
+        display: 'flex',
+        width: '500vw',
+        height: '100vh',
+        transform: `translateX(-${(currentSlide - 1) * 100}vw)`,
+        transition: 'transform 0.5s ease-in-out'
+      }}>
+        {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+        {/* [슬라이드 1] 히어로 - 시작 화면 */}
+        {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+        <div style={{
+          width: '100vw',
+          height: '100vh',
+          flexShrink: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          background: 'linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%)',
+          padding: '24px'
+        }}>
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            style={{ textAlign: 'center', maxWidth: '480px' }}
+          >
+            <div style={{ fontSize: '64px', marginBottom: '24px' }}>🌱</div>
+            <h1 style={{
+              fontSize: '36px',
+              fontWeight: 'bold',
+              color: '#166534',
+              marginBottom: '24px',
+              lineHeight: '1.4'
+            }}>
+              나를 더 건강하게 만드는<br/>작은 시작
+            </h1>
+            <p style={{
+              fontSize: '18px',
+              color: '#374151',
+              marginBottom: '16px',
+              lineHeight: '1.6'
+            }}>
+              당신의 몸은 매일 당신이 어떻게 살아왔는지<br/>
+              이야기하고 있어요
+            </p>
+            <p style={{
+              fontSize: '16px',
+              color: '#6B7280',
+              marginBottom: '40px',
+              lineHeight: '1.6'
+            }}>
+              오늘부터 시작하는<br/>
+              나만의 웰니스 여정을 함께 해볼까요?
+            </p>
 
-      <div className="w-full max-w-4xl mx-auto px-4">
-        {/* 헤더 */}
-        <motion.div 
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-8"
-        >
-        <h1 className="text-4xl font-bold gradient-text mb-4">
-          생체 나이 계산기
-        </h1>
-        <p className="text-gray-600 text-lg mb-2">
-          당신의 실제 나이와 생체 나이를 비교해보세요
-        </p>
-        <p className="text-gray-500 text-sm">
-          생활습관을 입력하면 과학적 근거 기반으로 생체 나이를 계산해드립니다
-        </p>
-        </motion.div>
-
-        {/* 진행 표시기 - 개선 */}
-        <div className="mb-8 bg-white rounded-xl p-4 shadow-lg">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-semibold text-gray-600">진행 단계</span>
-            <span className="text-2xl font-bold text-green-600">{step}/3</span>
-          </div>
-          <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden shadow-inner">
-            <div 
-              className="h-full bg-gradient-to-r from-green-500 to-green-600 transition-all duration-700 shadow-lg"
-              style={{ width: `${(step / 3) * 100}%` }}
-            />
-          </div>
-          <p className="text-xs text-gray-500 mt-2 text-center">
-            {step === 1 && '1단계: 기본 정보 입력 중...'}
-            {step === 2 && '2단계: 생활습관 측정 중...'}
-            {step === 3 && '3단계: 결과 확인 중...'}
-          </p>
-        </div>
-
-        {/* 진행 단계 아이콘 */}
-        <div className="flex justify-center mb-8">
-          <div className="flex items-center space-x-4">
-            {[
-              { number: 1, label: '정보 입력', icon: '📋' },
-              { number: 2, label: '건강 측정', icon: '💊' },
-              { number: 3, label: '결과 확인', icon: '📊' }
-            ].map((stepInfo) => (
-              <div key={stepInfo.number} className="flex items-center">
-                <div className={`w-14 h-14 rounded-full flex flex-col items-center justify-center font-semibold transition-all ${
-                  step >= stepInfo.number 
-                    ? 'bg-green-500 text-white scale-110 shadow-lg' 
-                    : 'bg-gray-200 text-gray-500'
-                }`}>
-                  <span className="text-xl">{stepInfo.icon}</span>
-                  <span className="text-xs mt-1">{stepInfo.label}</span>
-                </div>
-                {stepInfo.number < 3 && (
-                  <div className={`w-16 h-1 mx-2 transition-all ${
-                    step > stepInfo.number ? 'bg-green-500' : 'bg-gray-200'
-                  }`} />
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <AnimatePresence mode="wait">
-          {/* 1단계: 기본 정보 */}
-          {step === 1 && (
-            <motion.div
-              key="step1"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="card p-8"
+            <button
+              onClick={() => setCurrentSlide(2)}
+              style={{
+                width: '100%',
+                maxWidth: '320px',
+                background: 'linear-gradient(to right, #10B981, #059669)',
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: '18px',
+                padding: '20px 32px',
+                borderRadius: '9999px',
+                border: 'none',
+                cursor: 'pointer',
+                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+                transition: 'all 0.3s'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'scale(1.05)'
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'scale(1)'
+              }}
             >
-              <h2 className="text-2xl font-bold mb-6 flex items-center">
-                <Calculator className="mr-3 text-primary-500" />
-                기본 정보 입력
-              </h2>
-              
-              <div className="space-y-6">
+              시작하기 →
+            </button>
+          </motion.div>
+        </div>
+
+        {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+        {/* [슬라이드 2] 입력 폼 */}
+        {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+        <div style={{
+          width: '100vw',
+          height: '100vh',
+          flexShrink: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          background: '#F5F7FA',
+          overflow: 'hidden'
+        }}>
+          {/* 상단 네비게이션 */}
+          <div style={{
+            background: 'white',
+            padding: '16px 24px',
+            borderBottom: '1px solid #E5E7EB',
+            flexShrink: 0
+          }}>
+            <div style={{
+              maxWidth: '480px',
+              margin: '0 auto',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <button
+                onClick={() => setCurrentSlide(1)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#6B7280',
+                  cursor: 'pointer',
+                  fontSize: '16px'
+                }}
+              >
+                ← 뒤로
+              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  background: currentSlide >= 1 ? '#10B981' : '#D1D5DB'
+                }}></div>
+                <div style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  background: currentSlide >= 2 ? '#10B981' : '#D1D5DB'
+                }}></div>
+                <div style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  background: currentSlide >= 3 ? '#10B981' : '#D1D5DB'
+                }}></div>
+              </div>
+              <span style={{ fontSize: '14px', color: '#6B7280' }}>{currentSlide}/3</span>
+            </div>
+          </div>
+
+          {/* 스크롤 가능한 콘텐츠 */}
+          <div style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '24px'
+          }}>
+            <div style={{ maxWidth: '480px', margin: '0 auto' }}>
+              {/* 제목 */}
+              <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+                <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1F2937', marginBottom: '8px' }}>
+                  📋 정보 입력
+                </h2>
+                <p style={{ fontSize: '14px', color: '#6B7280' }}>
+                  정확한 분석을 위해 몇 가지만 알려주세요
+                </p>
+              </div>
+
+              {/* 입력 폼 카드 */}
+              <div style={{
+                background: 'white',
+                borderRadius: '16px',
+                padding: '24px',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                marginBottom: '24px'
+              }}>
                 {/* 실제 나이 */}
-                <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6 border-2 border-green-200">
-                  <label className="flex items-center text-base font-bold text-gray-800 mb-3">
-                    <span className="mr-2">🎂</span>
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: '#374151',
+                    marginBottom: '8px'
+                  }}>
+                    <span style={{ marginRight: '8px' }}>🎂</span>
                     실제 나이
                   </label>
+                  <p style={{ fontSize: '12px', color: '#6B7280', marginBottom: '8px' }}>
+                    더 정확한 생체 나이 분석을 위해 필요해요
+                  </p>
                   <input
                     type="number"
                     value={healthData.age}
                     onChange={(e) => setHealthData({...healthData, age: parseInt(e.target.value)})}
-                    className="w-full p-4 text-lg font-semibold border-2 border-green-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-white"
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      fontSize: '16px',
+                      border: '2px solid #E5E7EB',
+                      borderRadius: '12px',
+                      outline: 'none'
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = '#10B981'
+                      e.currentTarget.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)'
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = '#E5E7EB'
+                      e.currentTarget.style.boxShadow = 'none'
+                    }}
                     min="18"
                     max="100"
+                    placeholder="예: 30"
                   />
                 </div>
 
-                {/* 성별 선택 - 버튼 형식 */}
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border-2 border-blue-200">
-                  <label className="flex items-center text-base font-bold text-gray-800 mb-3">
-                    <span className="mr-2">👤</span>
+                {/* 성별 */}
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: '#374151',
+                    marginBottom: '8px'
+                  }}>
+                    <span style={{ marginRight: '8px' }}>👤</span>
                     성별
                   </label>
-                  <div className="grid grid-cols-2 gap-4">
+                  <p style={{ fontSize: '12px', color: '#6B7280', marginBottom: '8px' }}>
+                    성별에 따라 기준 수치가 달라져요
+                  </p>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                     <button
-                      type="button"
                       onClick={() => setHealthData({...healthData, gender: 'male'})}
-                      className={`p-6 rounded-xl font-bold text-lg transition-all ${
-                        healthData.gender === 'male'
-                          ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg scale-105'
-                          : 'bg-white border-2 border-gray-300 text-gray-600 hover:border-blue-500'
-                      }`}
+                      style={{
+                        padding: '12px',
+                        borderRadius: '9999px',
+                        border: healthData.gender === 'male' ? 'none' : '2px solid #E5E7EB',
+                        background: healthData.gender === 'male' ? '#10B981' : 'white',
+                        color: healthData.gender === 'male' ? 'white' : '#6B7280',
+                        fontWeight: '600',
+                        fontSize: '14px',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }}
                     >
                       👨 남성
                     </button>
                     <button
-                      type="button"
                       onClick={() => setHealthData({...healthData, gender: 'female'})}
-                      className={`p-6 rounded-xl font-bold text-lg transition-all ${
-                        healthData.gender === 'female'
-                          ? 'bg-gradient-to-r from-pink-500 to-pink-600 text-white shadow-lg scale-105'
-                          : 'bg-white border-2 border-gray-300 text-gray-600 hover:border-pink-500'
-                      }`}
+                      style={{
+                        padding: '12px',
+                        borderRadius: '9999px',
+                        border: healthData.gender === 'female' ? 'none' : '2px solid #E5E7EB',
+                        background: healthData.gender === 'female' ? '#10B981' : 'white',
+                        color: healthData.gender === 'female' ? 'white' : '#6B7280',
+                        fontWeight: '600',
+                        fontSize: '14px',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      }}
                     >
                       👩 여성
                     </button>
@@ -306,340 +359,1026 @@ export default function BiologicalAgeCalculator() {
                 </div>
 
                 {/* 체중 */}
-                <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-xl p-6 border-2 border-orange-200">
-                  <label className="flex items-center text-base font-bold text-gray-800 mb-3">
-                    <span className="mr-2">⚖️</span>
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: '#374151',
+                    marginBottom: '8px'
+                  }}>
+                    <span style={{ marginRight: '8px' }}>⚖️</span>
                     체중 (kg)
                   </label>
+                  <p style={{ fontSize: '12px', color: '#6B7280', marginBottom: '8px' }}>
+                    현재 몸 상태를 파악하는데 사용돼요
+                  </p>
                   <input
                     type="number"
                     value={healthData.weight}
                     onChange={(e) => setHealthData({...healthData, weight: parseInt(e.target.value)})}
-                    className="w-full p-4 text-lg font-semibold border-2 border-orange-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white"
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      fontSize: '16px',
+                      border: '2px solid #E5E7EB',
+                      borderRadius: '12px',
+                      outline: 'none'
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = '#10B981'
+                      e.currentTarget.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)'
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = '#E5E7EB'
+                      e.currentTarget.style.boxShadow = 'none'
+                    }}
                     min="30"
                     max="200"
+                    placeholder="예: 70"
                   />
                 </div>
 
                 {/* 키 */}
-                <div className="bg-gradient-to-r from-purple-50 to-violet-50 rounded-xl p-6 border-2 border-purple-200">
-                  <label className="flex items-center text-base font-bold text-gray-800 mb-3">
-                    <span className="mr-2">📏</span>
+                <div style={{ marginBottom: '20px' }}>
+                  <label style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    fontSize: '14px',
+                    fontWeight: '600',
+                    color: '#374151',
+                    marginBottom: '8px'
+                  }}>
+                    <span style={{ marginRight: '8px' }}>📏</span>
                     키 (cm)
                   </label>
+                  <p style={{ fontSize: '12px', color: '#6B7280', marginBottom: '8px' }}>
+                    BMI 계산에 사용돼요
+                  </p>
                   <input
                     type="number"
                     value={healthData.height}
                     onChange={(e) => setHealthData({...healthData, height: parseInt(e.target.value)})}
-                    className="w-full p-4 text-lg font-semibold border-2 border-purple-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 bg-white"
+                    style={{
+                      width: '100%',
+                      padding: '12px',
+                      fontSize: '16px',
+                      border: '2px solid #E5E7EB',
+                      borderRadius: '12px',
+                      outline: 'none'
+                    }}
+                    onFocus={(e) => {
+                      e.currentTarget.style.borderColor = '#10B981'
+                      e.currentTarget.style.boxShadow = '0 0 0 3px rgba(16, 185, 129, 0.1)'
+                    }}
+                    onBlur={(e) => {
+                      e.currentTarget.style.borderColor = '#E5E7EB'
+                      e.currentTarget.style.boxShadow = 'none'
+                    }}
                     min="120"
                     max="220"
+                    placeholder="예: 170"
                   />
-                  {healthData.weight && healthData.height && (
-                    <div className="mt-3">
-                      <p className="text-sm text-gray-600">BMI: {((healthData.weight / ((healthData.height / 100) ** 2)).toFixed(1))}</p>
-                      <div className="mt-2 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div 
-                          className="h-full transition-all duration-300"
-                          style={{
-                            width: `${Math.min(((healthData.weight / ((healthData.height / 100) ** 2) - 15) / 15) * 100, 100)}%`,
-                            backgroundColor: ((healthData.weight / ((healthData.height / 100) ** 2)) < 18.5) ? '#F59E0B' : ((healthData.weight / ((healthData.height / 100) ** 2)) < 25) ? '#10B981' : '#EF4444'
-                          }}
-                        />
-                      </div>
+                </div>
+
+                {/* BMI 표시 */}
+                {healthData.weight && healthData.height && (
+                  <div style={{
+                    marginTop: '20px',
+                    paddingTop: '20px',
+                    borderTop: '2px solid #F3F4F6'
+                  }}>
+                    <div style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      marginBottom: '12px'
+                    }}>
+                      <p style={{ fontSize: '14px', fontWeight: '600', color: '#374151' }}>💚 BMI 지수</p>
+                      <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#10B981' }}>
+                        {calculateBMI()}
+                      </p>
                     </div>
-                  )}
+                    <div style={{
+                      height: '8px',
+                      background: '#E5E7EB',
+                      borderRadius: '9999px',
+                      overflow: 'hidden'
+                    }}>
+                      <div style={{
+                        height: '100%',
+                        width: `${Math.min(((Number(calculateBMI()) - 15) / 15) * 100, 100)}%`,
+                        background: Number(calculateBMI()) < 18.5 ? '#F59E0B' : Number(calculateBMI()) < 25 ? '#10B981' : '#EF4444',
+                        transition: 'all 0.3s'
+                      }}></div>
+                    </div>
+                    <p style={{
+                      fontSize: '12px',
+                      color: '#6B7280',
+                      textAlign: 'center',
+                      marginTop: '8px'
+                    }}>
+                      {Number(calculateBMI()) < 18.5 && '저체중'}
+                      {Number(calculateBMI()) >= 18.5 && Number(calculateBMI()) < 25 && '정상 범위 ✨'}
+                      {Number(calculateBMI()) >= 25 && '과체중'}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* 다음 버튼 */}
+              <button
+                onClick={() => setCurrentSlide(3)}
+                style={{
+                  width: '100%',
+                  background: 'linear-gradient(to right, #10B981, #059669)',
+                  color: 'white',
+                  fontWeight: 'bold',
+                  fontSize: '16px',
+                  padding: '16px',
+                  borderRadius: '9999px',
+                  border: 'none',
+                  cursor: 'pointer',
+                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
+                  transition: 'all 0.3s'
+                }}
+                onMouseOver={(e) => {
+                  e.currentTarget.style.transform = 'scale(1.02)'
+                }}
+                onMouseOut={(e) => {
+                  e.currentTarget.style.transform = 'scale(1)'
+                }}
+              >
+                다음 단계로 →
+              </button>
+              <p style={{
+                fontSize: '12px',
+                color: '#6B7280',
+                textAlign: 'center',
+                marginTop: '12px'
+              }}>
+                다음 단계에서는 생활습관을 확인합니다
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+        {/* [슬라이드 3] 💊 생활습관 측정 */}
+        {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+        <div style={{
+          width: '100vw',
+          height: '100vh',
+          flexShrink: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          background: '#FFFFFF',
+          overflow: 'hidden'
+        }}>
+          {/* 상단 네비게이션 */}
+          <div style={{
+            background: 'white',
+            padding: '16px 24px',
+            borderBottom: '1px solid #E5E7EB',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+            flexShrink: 0
+          }}>
+            <div style={{
+              maxWidth: '480px',
+              margin: '0 auto',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between'
+            }}>
+              <button
+                onClick={() => setCurrentSlide(2)}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: '#6B7280',
+                  cursor: 'pointer',
+                  fontSize: '16px'
+                }}
+              >
+                ← 뒤로
+              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <div style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  background: '#10B981'
+                }}></div>
+                <div style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  background: '#10B981'
+                }}></div>
+                <div style={{
+                  width: '8px',
+                  height: '8px',
+                  borderRadius: '50%',
+                  background: currentSlide >= 3 ? '#10B981' : '#D1D5DB'
+                }}></div>
+              </div>
+              <span style={{ fontSize: '14px', color: '#6B7280' }}>2/3</span>
+            </div>
+          </div>
+
+          {/* 스크롤 가능한 콘텐츠 */}
+          <div style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '40px 24px 100px'
+          }}>
+            <div style={{ maxWidth: '480px', margin: '0 auto' }}>
+              {/* 제목 섹션 */}
+              <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                <div style={{ fontSize: '48px', marginBottom: '16px' }}>💊</div>
+                <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1F2937', marginBottom: '8px' }}>
+                  생활습관 체크
+                </h2>
+                <p style={{ fontSize: '14px', color: '#6B7280' }}>
+                  건강한 삶을 위한<br/>습관들을 확인해볼까요?
+                </p>
+              </div>
+
+              {/* 질문 1: 수면 시간 */}
+              <div style={{
+                background: 'white',
+                padding: '24px',
+                borderRadius: '16px',
+                boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+                marginBottom: '16px'
+              }}>
+                <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1F2937', marginBottom: '16px' }}>
+                  😴 하루 평균 수면 시간은?
+                </h3>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                  {['5시간 이하', '6시간 정도', '7-8시간', '9시간 이상'].map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => setHealthData({...healthData, sleep: option})}
+                      style={{
+                        padding: '16px',
+                        borderRadius: '12px',
+                        border: healthData.sleep === option ? '2px solid #66BB6A' : '2px solid #E0E0E0',
+                        background: healthData.sleep === option ? '#E8F5E9' : 'white',
+                        color: '#1F2937',
+                        fontWeight: '600',
+                        fontSize: '14px',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s'
+                      }}
+                    >
+                      {option}
+                    </button>
+                  ))}
                 </div>
               </div>
 
-              <div className="mt-6 flex justify-end">
-                <button
-                  onClick={() => setStep(2)}
-                  className="btn-primary"
-                >
-                  다음 단계
-                </button>
+              {/* 질문 2: 운동 빈도 */}
+              <div style={{
+                background: 'white',
+                padding: '24px',
+                borderRadius: '16px',
+                boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+                marginBottom: '16px'
+              }}>
+                <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1F2937', marginBottom: '16px' }}>
+                  🏃 일주일에 운동하는 횟수는?
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {['거의 안함', '주 1-2회', '주 3-4회', '주 5회 이상'].map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => setHealthData({...healthData, exercise: option})}
+                      style={{
+                        padding: '16px',
+                        borderRadius: '12px',
+                        border: healthData.exercise === option ? '2px solid #66BB6A' : '2px solid #E0E0E0',
+                        background: healthData.exercise === option ? '#E8F5E9' : 'white',
+                        color: '#1F2937',
+                        fontWeight: '600',
+                        fontSize: '14px',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s',
+                        textAlign: 'center'
+                      }}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </motion.div>
-          )}
 
-          {/* 2단계: 생활습관 */}
-          {step === 2 && (
-            <motion.div
-              key="step2"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="card p-8"
+              {/* 질문 3: 식습관 */}
+              <div style={{
+                background: 'white',
+                padding: '24px',
+                borderRadius: '16px',
+                boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+                marginBottom: '16px'
+              }}>
+                <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1F2937', marginBottom: '16px' }}>
+                  🍽️ 하루 식사 패턴은?
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {['불규칙적', '하루 1-2끼', '규칙적 3끼', '소식 다회'].map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => setHealthData({...healthData, meal: option})}
+                      style={{
+                        padding: '16px',
+                        borderRadius: '12px',
+                        border: healthData.meal === option ? '2px solid #66BB6A' : '2px solid #E0E0E0',
+                        background: healthData.meal === option ? '#E8F5E9' : 'white',
+                        color: '#1F2937',
+                        fontWeight: '600',
+                        fontSize: '14px',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s',
+                        textAlign: 'center'
+                      }}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 질문 4: 스트레스 수준 */}
+              <div style={{
+                background: 'white',
+                padding: '24px',
+                borderRadius: '16px',
+                boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+                marginBottom: '16px'
+              }}>
+                <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1F2937', marginBottom: '16px' }}>
+                  😌 일상 스트레스 수준은?
+                </h3>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px' }}>
+                  {[1, 2, 3, 4, 5].map((level) => (
+                    <button
+                      key={level}
+                      onClick={() => setHealthData({...healthData, stress: level})}
+                      style={{
+                        flex: 1,
+                        padding: '16px',
+                        borderRadius: '12px',
+                        border: healthData.stress === level ? '2px solid #66BB6A' : '2px solid #E0E0E0',
+                        background: healthData.stress === level ? '#E8F5E9' : 'white',
+                        color: '#1F2937',
+                        fontWeight: '600',
+                        fontSize: '18px',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s'
+                      }}
+                    >
+                      {level}
+                    </button>
+                  ))}
+                </div>
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  fontSize: '12px',
+                  color: '#6B7280',
+                  marginTop: '8px'
+                }}>
+                  <span>낮음</span>
+                  <span>높음</span>
+                </div>
+              </div>
+
+              {/* 질문 5: 음주 빈도 */}
+              <div style={{
+                background: 'white',
+                padding: '24px',
+                borderRadius: '16px',
+                boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+                marginBottom: '16px'
+              }}>
+                <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1F2937', marginBottom: '16px' }}>
+                  🍷 음주 빈도는?
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {['안 마심', '월 1-2회', '주 1-2회', '주 3회 이상'].map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => setHealthData({...healthData, alcohol: option})}
+                      style={{
+                        padding: '16px',
+                        borderRadius: '12px',
+                        border: healthData.alcohol === option ? '2px solid #66BB6A' : '2px solid #E0E0E0',
+                        background: healthData.alcohol === option ? '#E8F5E9' : 'white',
+                        color: '#1F2937',
+                        fontWeight: '600',
+                        fontSize: '14px',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s',
+                        textAlign: 'center'
+                      }}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 질문 6: 흡연 여부 */}
+              <div style={{
+                background: 'white',
+                padding: '24px',
+                borderRadius: '16px',
+                boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+                marginBottom: '16px'
+              }}>
+                <h3 style={{ fontSize: '16px', fontWeight: '600', color: '#1F2937', marginBottom: '16px' }}>
+                  🚭 흡연 상태는?
+                </h3>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {['비흡연', '과거 흡연 (금연 중)', '현재 흡연'].map((option) => (
+                    <button
+                      key={option}
+                      onClick={() => setHealthData({...healthData, smoking: option})}
+                      style={{
+                        padding: '16px',
+                        borderRadius: '12px',
+                        border: healthData.smoking === option ? '2px solid #66BB6A' : '2px solid #E0E0E0',
+                        background: healthData.smoking === option ? '#E8F5E9' : 'white',
+                        color: '#1F2937',
+                        fontWeight: '600',
+                        fontSize: '14px',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s',
+                        textAlign: 'center'
+                      }}
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 하단 고정 버튼 */}
+          <div style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            padding: '24px',
+            background: 'white',
+            boxShadow: '0 -2px 8px rgba(0,0,0,0.05)'
+          }}>
+            <div style={{ maxWidth: '480px', margin: '0 auto' }}>
+              <button
+                onClick={() => {
+                  // 모든 질문에 답변했는지 확인
+                  if (healthData.sleep && healthData.exercise && healthData.meal &&
+                      healthData.alcohol && healthData.smoking) {
+                    setCurrentSlide(4)
+                  } else {
+                    alert('모든 질문에 답변해주세요!')
+                  }
+                }}
+                disabled={!healthData.sleep || !healthData.exercise || !healthData.meal ||
+                         !healthData.alcohol || !healthData.smoking}
+                style={{
+                  width: '100%',
+                  background: (!healthData.sleep || !healthData.exercise || !healthData.meal ||
+                              !healthData.alcohol || !healthData.smoking)
+                    ? '#D1D5DB'
+                    : 'linear-gradient(to right, #10B981, #059669)',
+                  color: 'white',
+                  fontWeight: 'bold',
+                  fontSize: '16px',
+                  padding: '16px',
+                  borderRadius: '9999px',
+                  border: 'none',
+                  cursor: (!healthData.sleep || !healthData.exercise || !healthData.meal ||
+                          !healthData.alcohol || !healthData.smoking)
+                    ? 'not-allowed'
+                    : 'pointer',
+                  opacity: (!healthData.sleep || !healthData.exercise || !healthData.meal ||
+                           !healthData.alcohol || !healthData.smoking)
+                    ? 0.5
+                    : 1,
+                  transition: 'all 0.3s'
+                }}
+              >
+                결과 확인하기 →
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+        {/* [슬라이드 4] 🎉 생체나이 결과 */}
+        {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+        <div style={{
+          width: '100vw',
+          height: '100vh',
+          flexShrink: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          background: 'linear-gradient(135deg, #E8F5E9, #C8E6C9)',
+          padding: '24px',
+          position: 'relative'
+        }}>
+          {/* 상단 진행도 표시 */}
+          <div style={{
+            position: 'absolute',
+            top: '24px',
+            right: '24px',
+            display: 'flex',
+            gap: '8px'
+          }}>
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              background: '#10B981'
+            }}></div>
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              background: '#10B981'
+            }}></div>
+            <div style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              background: '#10B981'
+            }}></div>
+          </div>
+
+          {/* 메인 결과 컨텐츠 */}
+          <div style={{
+            textAlign: 'center',
+            maxWidth: '480px',
+            width: '100%'
+          }}>
+            {/* 이모지 */}
+            <div style={{ fontSize: '64px', marginBottom: '24px' }}>🎉</div>
+
+            {/* 타이틀 */}
+            <h2 style={{
+              fontSize: '24px',
+              fontWeight: 'bold',
+              color: '#166534',
+              marginBottom: '32px'
+            }}>
+              당신의 생체 나이는
+            </h2>
+
+            {/* 생체나이 큰 숫자 */}
+            <div style={{
+              fontSize: '64px',
+              fontWeight: 'bold',
+              color: '#2E7D32',
+              marginBottom: '16px',
+              lineHeight: '1'
+            }}>
+              {calculateBiologicalAge()}세
+            </div>
+
+            {/* 실제 나이와 비교 */}
+            <p style={{
+              fontSize: '18px',
+              color: '#374151',
+              marginBottom: '32px'
+            }}>
+              {getAgeDifference() < 0 ? (
+                <>
+                  실제 나이보다 <span style={{ color: '#10B981', fontWeight: 'bold' }}>
+                    {Math.abs(getAgeDifference())}세 젊습니다
+                  </span> 🎊
+                </>
+              ) : getAgeDifference() === 0 ? (
+                <>
+                  실제 나이와 <span style={{ color: '#3B82F6', fontWeight: 'bold' }}>
+                    같습니다
+                  </span> 👍
+                </>
+              ) : (
+                <>
+                  실제 나이보다 <span style={{ color: '#EF4444', fontWeight: 'bold' }}>
+                    {getAgeDifference()}세 많습니다
+                  </span> 💡
+                </>
+              )}
+            </p>
+
+            {/* 비교 비주얼 (슬라이더 바) */}
+            <div style={{
+              background: 'white',
+              borderRadius: '16px',
+              padding: '24px',
+              marginBottom: '24px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '16px'
+              }}>
+                <div style={{ textAlign: 'left' }}>
+                  <p style={{ fontSize: '12px', color: '#6B7280', marginBottom: '4px' }}>실제 나이</p>
+                  <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#6B7280' }}>
+                    {healthData.age}세
+                  </p>
+                </div>
+                <div style={{ fontSize: '24px' }}>↔️</div>
+                <div style={{ textAlign: 'right' }}>
+                  <p style={{ fontSize: '12px', color: '#6B7280', marginBottom: '4px' }}>생체 나이</p>
+                  <p style={{ fontSize: '24px', fontWeight: 'bold', color: '#2E7D32' }}>
+                    {calculateBiologicalAge()}세
+                  </p>
+                </div>
+              </div>
+
+              {/* 진행 바 */}
+              <div style={{
+                width: '100%',
+                height: '12px',
+                background: '#E5E7EB',
+                borderRadius: '9999px',
+                position: 'relative',
+                overflow: 'hidden'
+              }}>
+                <div style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                  width: `${Math.min(100, Math.max(0, ((healthData.age - 20) / 60) * 100))}%`,
+                  background: '#9CA3AF',
+                  borderRadius: '9999px',
+                  transition: 'all 0.5s'
+                }}></div>
+                <div style={{
+                  position: 'absolute',
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                  width: `${Math.min(100, Math.max(0, ((calculateBiologicalAge() - 20) / 60) * 100))}%`,
+                  background: getAgeDifference() < 0 ? '#10B981' : getAgeDifference() === 0 ? '#3B82F6' : '#EF4444',
+                  borderRadius: '9999px',
+                  transition: 'all 0.5s'
+                }}></div>
+              </div>
+            </div>
+
+            {/* 등급 뱃지 */}
+            <div style={{
+              display: 'inline-block',
+              background: 'white',
+              borderRadius: '9999px',
+              padding: '12px 24px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+              marginBottom: '40px'
+            }}>
+              <span style={{ fontSize: '20px', marginRight: '8px' }}>{getGrade().emoji}</span>
+              <span style={{
+                fontSize: '18px',
+                fontWeight: 'bold',
+                color: getGrade().color
+              }}>
+                {getGrade().label}
+              </span>
+            </div>
+
+            {/* 다음 버튼 */}
+            <button
+              onClick={() => setCurrentSlide(5)}
+              style={{
+                width: '100%',
+                maxWidth: '320px',
+                background: 'linear-gradient(to right, #10B981, #059669)',
+                color: 'white',
+                fontWeight: 'bold',
+                fontSize: '18px',
+                padding: '20px 32px',
+                borderRadius: '9999px',
+                border: 'none',
+                cursor: 'pointer',
+                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+                transition: 'all 0.3s'
+              }}
+              onMouseOver={(e) => {
+                e.currentTarget.style.transform = 'scale(1.05)'
+              }}
+              onMouseOut={(e) => {
+                e.currentTarget.style.transform = 'scale(1)'
+              }}
             >
-              <h2 className="text-2xl font-bold mb-6 flex items-center">
-                <Heart className="mr-3 text-primary-500" />
-                생활습관 정보
-              </h2>
+              상세 분석 보기 →
+            </button>
+          </div>
+        </div>
 
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    주당 운동 횟수: {healthData.exerciseFrequency}회
-                  </label>
-                  <input
-                    type="range"
-                    min="0"
-                    max="7"
-                    value={healthData.exerciseFrequency}
-                    onChange={(e) => setHealthData({...healthData, exerciseFrequency: parseInt(e.target.value)})}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>전혀 안함</span>
-                    <span>매일</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    하루 평균 수면 시간: {healthData.sleepHours}시간
-                  </label>
-                  <input
-                    type="range"
-                    min="4"
-                    max="12"
-                    value={healthData.sleepHours}
-                    onChange={(e) => setHealthData({...healthData, sleepHours: parseInt(e.target.value)})}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>4시간</span>
-                    <span>12시간</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    스트레스 수준: {healthData.stressLevel}/10
-                  </label>
-                  <input
-                    type="range"
-                    min="1"
-                    max="10"
-                    value={healthData.stressLevel}
-                    onChange={(e) => setHealthData({...healthData, stressLevel: parseInt(e.target.value)})}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>매우 낮음</span>
-                    <span>매우 높음</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    식단 품질: {healthData.dietQuality}/10
-                  </label>
-                  <input
-                    type="range"
-                    min="1"
-                    max="10"
-                    value={healthData.dietQuality}
-                    onChange={(e) => setHealthData({...healthData, dietQuality: parseInt(e.target.value)})}
-                    className="w-full"
-                  />
-                  <div className="flex justify-between text-xs text-gray-500 mt-1">
-                    <span>매우 나쁨</span>
-                    <span>매우 좋음</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={healthData.smoking}
-                      onChange={(e) => setHealthData({...healthData, smoking: e.target.checked})}
-                      className="w-4 h-4 text-primary-600"
-                    />
-                    <span className="text-sm">흡연</span>
-                  </label>
-
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={healthData.drinking}
-                      onChange={(e) => setHealthData({...healthData, drinking: e.target.checked})}
-                      className="w-4 h-4 text-primary-600"
-                    />
-                    <span className="text-sm">음주</span>
-                  </label>
-
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={healthData.meditation}
-                      onChange={(e) => setHealthData({...healthData, meditation: e.target.checked})}
-                      className="w-4 h-4 text-primary-600"
-                    />
-                    <span className="text-sm">명상 실천</span>
-                  </label>
-                </div>
+        {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+        {/* [슬라이드 5] 💡 개선 제안 */}
+        {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
+        <div style={{
+          width: '100vw',
+          height: '100vh',
+          flexShrink: 0,
+          display: 'flex',
+          flexDirection: 'column',
+          background: '#FFFFFF',
+          overflow: 'hidden'
+        }}>
+          {/* 스크롤 가능한 콘텐츠 */}
+          <div style={{
+            flex: 1,
+            overflowY: 'auto',
+            padding: '40px 24px 120px'
+          }}>
+            <div style={{ maxWidth: '480px', margin: '0 auto' }}>
+              {/* 제목 섹션 */}
+              <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                <div style={{ fontSize: '48px', marginBottom: '16px' }}>💡</div>
+                <h2 style={{ fontSize: '24px', fontWeight: 'bold', color: '#1F2937', marginBottom: '8px' }}>
+                  맞춤 건강 개선 제안
+                </h2>
+                <p style={{ fontSize: '14px', color: '#6B7280' }}>
+                  더 젊고 건강한 몸을 위한<br/>작은 변화들을 시작해보세요
+                </p>
               </div>
 
-              <div className="mt-6 flex justify-between">
-                <button
-                  onClick={() => setStep(1)}
-                  className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  이전
-                </button>
-                <button
-                  onClick={handleCalculate}
-                  className="btn-primary"
-                >
-                  생체 나이 계산하기
-                </button>
-              </div>
-            </motion.div>
-          )}
+              {/* 조건부 제안 카드들 */}
 
-          {/* 3단계: 결과 */}
-          {step === 3 && result && (
-            <motion.div
-              key="step3"
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              className="card p-8"
-            >
-              <h2 className="text-2xl font-bold mb-6 flex items-center">
-                <Brain className="mr-3 text-primary-500" />
-                생체 나이 분석 결과
-              </h2>
-
-              {/* 결과 요약 */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div className="text-center p-6 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl">
-                  <div className="text-3xl font-bold text-blue-600 mb-2">
-                    {result.biologicalAge}세
-                  </div>
-                  <div className="text-sm text-gray-600">생체 나이</div>
-                </div>
-
-                <div className="text-center p-6 bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl">
-                  <div className={`text-3xl font-bold mb-2 ${
-                    result.ageDifference > 0 ? 'text-red-600' : 
-                    result.ageDifference < 0 ? 'text-green-600' : 'text-gray-600'
-                  }`}>
-                    {result.ageDifference > 0 ? '+' : ''}{result.ageDifference}세
-                  </div>
-                  <div className="text-sm text-gray-600">실제 나이와의 차이</div>
-                </div>
-
-                <div className="text-center p-6 bg-gradient-to-br from-green-50 to-green-100 rounded-xl">
-                  <div className="text-3xl font-bold text-green-600 mb-2">
-                    {result.healthScore}점
-                  </div>
-                  <div className="text-sm text-gray-600">건강 점수</div>
-                </div>
-              </div>
-
-              {/* 건강 점수 바 */}
-              <div className="mb-8">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm font-semibold">전체 건강 점수</span>
-                  <span className="text-sm text-gray-600">{result.healthScore}/100</span>
-                </div>
-                <div className="progress-bar">
-                  <div 
-                    className="progress-fill"
-                    style={{ width: `${result.healthScore}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* 위험 요인 */}
-              {result.riskFactors.length > 0 && (
-                <div className="mb-6">
-                  <h3 className="text-lg font-semibold mb-3 flex items-center text-red-600">
-                    <AlertCircle className="mr-2" />
-                    개선이 필요한 영역
+              {/* 수면 개선 제안 */}
+              {(healthData.sleep === '5시간 이하' || healthData.sleep === '6시간 정도') && (
+                <div style={{
+                  background: 'linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%)',
+                  borderRadius: '16px',
+                  padding: '24px',
+                  marginBottom: '16px',
+                  border: '2px solid #7DD3FC'
+                }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#0C4A6E', marginBottom: '12px' }}>
+                    😴 수면 습관 개선
                   </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {result.riskFactors.map((factor, index) => (
-                      <span key={index} className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-sm">
-                        {factor}
-                      </span>
-                    ))}
-                  </div>
+                  <p style={{ fontSize: '14px', color: '#374151', lineHeight: '1.6', marginBottom: '12px' }}>
+                    충분한 수면은 세포 재생과 호르몬 균형에 필수적입니다.
+                  </p>
+                  <ul style={{ fontSize: '14px', color: '#374151', lineHeight: '1.8', paddingLeft: '20px' }}>
+                    <li>매일 같은 시간에 취침하고 기상하세요</li>
+                    <li>잠들기 2시간 전 스마트폰 사용을 줄이세요</li>
+                    <li>하루 7-8시간 수면을 목표로 하세요</li>
+                  </ul>
                 </div>
               )}
 
-              {/* 추천사항 */}
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-3 flex items-center text-primary-600">
-                  <TrendingUp className="mr-2" />
-                  개선 추천사항
+              {/* 운동 개선 제안 */}
+              {(healthData.exercise === '거의 안함' || healthData.exercise === '주 1-2회') && (
+                <div style={{
+                  background: 'linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%)',
+                  borderRadius: '16px',
+                  padding: '24px',
+                  marginBottom: '16px',
+                  border: '2px solid #86EFAC'
+                }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#14532D', marginBottom: '12px' }}>
+                    🏃 운동 습관 만들기
+                  </h3>
+                  <p style={{ fontSize: '14px', color: '#374151', lineHeight: '1.6', marginBottom: '12px' }}>
+                    규칙적인 운동은 심혈관 건강과 근육량 유지에 도움이 됩니다.
+                  </p>
+                  <ul style={{ fontSize: '14px', color: '#374151', lineHeight: '1.8', paddingLeft: '20px' }}>
+                    <li>하루 30분 걷기부터 시작해보세요</li>
+                    <li>일주일에 3-4회 운동을 목표로 하세요</li>
+                    <li>계단 이용, 대중교통 한 정거장 전에 내리기 등 일상에서 활동량을 늘려보세요</li>
+                  </ul>
+                </div>
+              )}
+
+              {/* 식습관 개선 제안 */}
+              {(healthData.meal === '불규칙적' || healthData.meal === '하루 1-2끼') && (
+                <div style={{
+                  background: 'linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%)',
+                  borderRadius: '16px',
+                  padding: '24px',
+                  marginBottom: '16px',
+                  border: '2px solid #FCD34D'
+                }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#78350F', marginBottom: '12px' }}>
+                    🍽️ 식습관 개선
+                  </h3>
+                  <p style={{ fontSize: '14px', color: '#374151', lineHeight: '1.6', marginBottom: '12px' }}>
+                    규칙적인 식사는 대사 건강과 에너지 수준 유지에 중요합니다.
+                  </p>
+                  <ul style={{ fontSize: '14px', color: '#374151', lineHeight: '1.8', paddingLeft: '20px' }}>
+                    <li>하루 세 끼를 규칙적으로 드세요</li>
+                    <li>아침 식사를 거르지 마세요</li>
+                    <li>채소와 과일 섭취를 늘리고, 가공식품은 줄여보세요</li>
+                  </ul>
+                </div>
+              )}
+
+              {/* 스트레스 관리 제안 */}
+              {healthData.stress >= 4 && (
+                <div style={{
+                  background: 'linear-gradient(135deg, #F3E8FF 0%, #E9D5FF 100%)',
+                  borderRadius: '16px',
+                  padding: '24px',
+                  marginBottom: '16px',
+                  border: '2px solid #D8B4FE'
+                }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#581C87', marginBottom: '12px' }}>
+                    😌 스트레스 관리
+                  </h3>
+                  <p style={{ fontSize: '14px', color: '#374151', lineHeight: '1.6', marginBottom: '12px' }}>
+                    만성 스트레스는 노화를 가속화하고 면역력을 저하시킵니다.
+                  </p>
+                  <ul style={{ fontSize: '14px', color: '#374151', lineHeight: '1.8', paddingLeft: '20px' }}>
+                    <li>하루 10분 명상이나 심호흡을 실천해보세요</li>
+                    <li>취미 활동이나 친구들과의 시간을 늘려보세요</li>
+                    <li>필요하다면 전문가의 도움을 받는 것도 좋습니다</li>
+                  </ul>
+                </div>
+              )}
+
+              {/* 음주 절제 제안 */}
+              {(healthData.alcohol === '주 1-2회' || healthData.alcohol === '주 3회 이상') && (
+                <div style={{
+                  background: 'linear-gradient(135deg, #FFE4E6 0%, #FECDD3 100%)',
+                  borderRadius: '16px',
+                  padding: '24px',
+                  marginBottom: '16px',
+                  border: '2px solid #FDA4AF'
+                }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#881337', marginBottom: '12px' }}>
+                    🍷 음주 절제
+                  </h3>
+                  <p style={{ fontSize: '14px', color: '#374151', lineHeight: '1.6', marginBottom: '12px' }}>
+                    과도한 음주는 간 건강과 전반적인 노화에 악영향을 미칩니다.
+                  </p>
+                  <ul style={{ fontSize: '14px', color: '#374151', lineHeight: '1.8', paddingLeft: '20px' }}>
+                    <li>주 2회 이하로 음주 횟수를 줄여보세요</li>
+                    <li>한 번에 마시는 양을 줄이세요 (소주 기준 1-2잔)</li>
+                    <li>술 대신 탄산수나 무알콜 음료를 선택해보세요</li>
+                  </ul>
+                </div>
+              )}
+
+              {/* 금연 제안 */}
+              {(healthData.smoking === '현재 흡연' || healthData.smoking === '과거 흡연 (금연 중)') && (
+                <div style={{
+                  background: 'linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%)',
+                  borderRadius: '16px',
+                  padding: '24px',
+                  marginBottom: '16px',
+                  border: '2px solid #F87171'
+                }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: '#7F1D1D', marginBottom: '12px' }}>
+                    🚭 금연 {healthData.smoking === '과거 흡연 (금연 중)' ? '유지' : '시작'}
+                  </h3>
+                  <p style={{ fontSize: '14px', color: '#374151', lineHeight: '1.6', marginBottom: '12px' }}>
+                    {healthData.smoking === '과거 흡연 (금연 중)'
+                      ? '금연을 시작하신 것을 축하드립니다! 계속 유지하세요.'
+                      : '흡연은 생체 나이를 가장 크게 높이는 요인 중 하나입니다.'}
+                  </p>
+                  <ul style={{ fontSize: '14px', color: '#374151', lineHeight: '1.8', paddingLeft: '20px' }}>
+                    {healthData.smoking === '과거 흡연 (금연 중)' ? (
+                      <>
+                        <li>금연 3개월만 지나도 폐 기능이 30% 회복됩니다</li>
+                        <li>스트레스 상황에서 흡연 욕구가 생길 수 있으니 대체 활동을 준비하세요</li>
+                        <li>금연 성공 확률을 높이려면 금연 클리닉을 활용해보세요</li>
+                      </>
+                    ) : (
+                      <>
+                        <li>금연은 가장 효과적인 노화 방지 방법입니다</li>
+                        <li>금연 클리닉이나 금연 패치 등의 도움을 받아보세요</li>
+                        <li>금연 성공 시 평균 생체 나이가 5세 이상 젊어집니다</li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+              )}
+
+              {/* 모든 습관이 좋을 경우 */}
+              {healthData.sleep === '7-8시간' &&
+               (healthData.exercise === '주 3-4회' || healthData.exercise === '주 5회 이상') &&
+               healthData.meal === '규칙적 3끼' &&
+               healthData.stress <= 2 &&
+               healthData.alcohol === '안 마심' &&
+               healthData.smoking === '비흡연' && (
+                <div style={{
+                  background: 'linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%)',
+                  borderRadius: '16px',
+                  padding: '24px',
+                  marginBottom: '16px',
+                  border: '2px solid #4ADE80',
+                  textAlign: 'center'
+                }}>
+                  <div style={{ fontSize: '48px', marginBottom: '16px' }}>🌟</div>
+                  <h3 style={{ fontSize: '20px', fontWeight: 'bold', color: '#14532D', marginBottom: '12px' }}>
+                    완벽한 생활습관입니다!
+                  </h3>
+                  <p style={{ fontSize: '14px', color: '#374151', lineHeight: '1.6' }}>
+                    현재의 건강한 습관을 잘 유지하고 계십니다.<br/>
+                    이대로만 계속하시면 건강한 삶을 오래 유지하실 수 있습니다.
+                  </p>
+                </div>
+              )}
+
+              {/* 추가 팁 */}
+              <div style={{
+                background: '#F9FAFB',
+                borderRadius: '16px',
+                padding: '24px',
+                marginTop: '24px'
+              }}>
+                <h3 style={{ fontSize: '16px', fontWeight: 'bold', color: '#1F2937', marginBottom: '12px' }}>
+                  💚 건강한 생활을 위한 추가 팁
                 </h3>
-                <ul className="space-y-2">
-                  {result.recommendations.map((recommendation, index) => (
-                    <li key={index} className="flex items-start space-x-2">
-                      <div className="w-2 h-2 bg-primary-500 rounded-full mt-2 flex-shrink-0" />
-                      <span className="text-gray-700">{recommendation}</span>
-                    </li>
-                  ))}
+                <ul style={{ fontSize: '14px', color: '#6B7280', lineHeight: '1.8', paddingLeft: '20px' }}>
+                  <li>하루 2리터 이상 물을 마시세요</li>
+                  <li>햇빛을 하루 15분 이상 쬐세요 (비타민 D 생성)</li>
+                  <li>정기적으로 건강검진을 받으세요</li>
+                  <li>긍정적인 마음가짐을 유지하세요</li>
                 </ul>
               </div>
+            </div>
+          </div>
 
-              {/* 과학적 근거 */}
-              <div className="mb-6 p-4 bg-blue-50 rounded-xl">
-                <h3 className="text-lg font-semibold mb-3 text-blue-800">
-                  📚 과학적 근거
-                </h3>
-                <div className="text-sm text-blue-700 space-y-1">
-                  <p>• MIND 식단: Morris et al. (2015) - 알츠하이머 위험 53% 감소</p>
-                  <p>• 유산소 운동: Werner et al. (2019) - 텔로미어 보존으로 생체 나이 9세 젊게</p>
-                  <p>• 명상: Stanford University 연구 - 코르티솔 25% 감소</p>
-                  <p>• 정희원 교수 임상 데이터: 3개월 실천 시 평균 생체 나이 -2.5세 개선</p>
-                </div>
-              </div>
-
-              {/* 액션 버튼 */}
-              <div className="flex justify-center space-x-4">
+          {/* 하단 고정 버튼들 */}
+          <div style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            padding: '24px',
+            background: 'white',
+            boxShadow: '0 -2px 8px rgba(0,0,0,0.05)'
+          }}>
+            <div style={{ maxWidth: '480px', margin: '0 auto' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                 <button
-                  onClick={resetCalculator}
-                  className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                  onClick={() => setCurrentSlide(1)}
+                  style={{
+                    background: 'white',
+                    color: '#6B7280',
+                    fontWeight: '600',
+                    fontSize: '14px',
+                    padding: '16px',
+                    borderRadius: '9999px',
+                    border: '2px solid #E5E7EB',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.borderColor = '#10B981'
+                    e.currentTarget.style.color = '#10B981'
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.borderColor = '#E5E7EB'
+                    e.currentTarget.style.color = '#6B7280'
+                  }}
                 >
-                  다시 계산하기
+                  처음으로
                 </button>
                 <button
                   onClick={() => {
-                    // 일일 미션 페이지로 이동하면서 생체 나이 데이터 전달
-                    localStorage.setItem('biologicalAgeResult', JSON.stringify({
-                      biologicalAge: result.biologicalAge,
-                      ageDifference: result.ageDifference,
-                      healthScore: result.healthScore
-                    }))
-                    window.location.href = '/slowaging/missions/'
+                    alert('결과 공유 기능은 곧 추가될 예정입니다! 😊')
                   }}
-                  className="btn-primary"
+                  style={{
+                    background: 'linear-gradient(to right, #10B981, #059669)',
+                    color: 'white',
+                    fontWeight: '600',
+                    fontSize: '14px',
+                    padding: '16px',
+                    borderRadius: '9999px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s'
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.05)'
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)'
+                  }}
                 >
-                  저속노화 여정 시작하기
+                  결과 공유
                 </button>
               </div>
-            </motion.div>
-          )}
-
-          {/* 계산 중 로딩 */}
-          {isCalculating && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="card p-8 text-center"
-            >
-              <div className="animate-spin w-12 h-12 border-4 border-primary-500 border-t-transparent rounded-full mx-auto mb-4" />
-              <h3 className="text-xl font-semibold mb-2">생체 나이 계산 중...</h3>
-              <p className="text-gray-600">잠시만 기다려주세요</p>
-            </motion.div>
-          )}
-        </AnimatePresence>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
