@@ -10,7 +10,6 @@
   }
 
   body {
-    @apply bg-gradient-to-br from-emerald-100 via-green-50 to-emerald-50 min-h-screen;
     margin: 0;
     padding: 0;
     width: 100%;
@@ -91,13 +90,8 @@
   }
 }
 
-/* 강제 중앙 정렬 - 배포 문제 해결 */
+/* 풀 너비 섹션 레이아웃 */
 @layer utilities {
-  .page-container {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    min-height: 100vh !important;
-  }
+  /* page-container는 더 이상 사용하지 않음 - 각 섹션이 풀 너비로 처리 */
 }
 
