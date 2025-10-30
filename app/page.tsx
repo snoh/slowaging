@@ -165,18 +165,6 @@ export default function BiologicalAgeCalculator() {
 
   return (
     <div className="page-container bg-gray-100 py-8 min-h-screen">
-      {/* 네비게이션 */}
-      <nav className="w-full max-w-7xl mx-auto px-4 py-6">
-        <div className="flex items-center justify-center">
-          <div className="flex items-center space-x-3">
-            <div className="w-16 h-16 bg-gradient-to-r from-green-400 to-emerald-500 rounded-xl flex items-center justify-center shadow-lg">
-              <span className="text-4xl">🌱</span>
-            </div>
-            <span className="text-4xl font-bold text-green-600">SlowAge Journey</span>
-          </div>
-        </div>
-      </nav>
-
       <div className="w-full max-w-[420px] mx-auto px-4">
         {/* ━━━━━━━━━━━━━━━━━━━━━━ */}
         {/* [1단] 히어로 섹션 - 상단 고정 */}
