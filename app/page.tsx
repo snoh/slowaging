@@ -160,6 +160,8 @@ export default function BiologicalAgeCalculator() {
               style={{
                 width: '100%',
                 maxWidth: '320px',
+                margin: '0 auto',
+                display: 'block',
                 background: 'linear-gradient(to right, #10B981, #059669)',
                 color: 'white',
                 fontWeight: 'bold',
@@ -834,16 +836,19 @@ export default function BiologicalAgeCalculator() {
             </div>
           </div>
 
-          {/* 하단 고정 버튼 */}
-          <div style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            padding: '24px',
-            background: 'white',
-            boxShadow: '0 -2px 8px rgba(0,0,0,0.05)'
-          }}>
+          {/* 하단 고정 버튼 - 슬라이드 3일 때만 표시 */}
+          {currentSlide === 3 && (
+            <div style={{
+              position: 'fixed',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              padding: '24px',
+              paddingBottom: 'max(24px, env(safe-area-inset-bottom))',
+              background: 'white',
+              boxShadow: '0 -2px 8px rgba(0,0,0,0.05)',
+              zIndex: 100
+            }}>
             <div style={{ maxWidth: '480px', margin: '0 auto' }}>
               <button
                 onClick={() => {
@@ -883,7 +888,8 @@ export default function BiologicalAgeCalculator() {
                 결과 확인하기 →
               </button>
             </div>
-          </div>
+            </div>
+          )}
         </div>
 
         {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
