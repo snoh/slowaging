@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   description: '심리학 이론 기반 저속노화 체험형 플랫폼으로 건강한 습관을 만들고 생체 나이를 젊게 유지하세요.',
   keywords: ['저속노화', '건강', '습관', '생체나이', '웰니스'],
   authors: [{ name: 'SlowAge Team' }],
-  viewport: 'width=device-width, initial-scale=1',
+  viewport: 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover',
 }
 
 export default function RootLayout({

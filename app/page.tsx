@@ -106,43 +106,52 @@ export default function BiologicalAgeCalculator() {
         {/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━ */}
         <div style={{
           width: '100vw',
-          height: '100vh',
+          minHeight: '100vh',
           flexShrink: 0,
           display: 'flex',
           flexDirection: 'column',
-          justifyContent: 'center',
+          justifyContent: 'space-between',
           alignItems: 'center',
           background: 'linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%)',
-          padding: '24px'
+          padding: '60px 24px 40px',
+          boxSizing: 'border-box'
         }}>
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            style={{ textAlign: 'center', maxWidth: '480px' }}
+            style={{
+              textAlign: 'center',
+              maxWidth: '480px',
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              width: '100%'
+            }}
           >
-            <div style={{ fontSize: '64px', marginBottom: '24px' }}>🌱</div>
+            <div style={{ fontSize: 'clamp(48px, 15vw, 64px)', marginBottom: '16px' }}>🌱</div>
             <h1 style={{
-              fontSize: '36px',
+              fontSize: 'clamp(28px, 8vw, 36px)',
               fontWeight: 'bold',
               color: '#166534',
-              marginBottom: '24px',
+              marginBottom: '16px',
               lineHeight: '1.4'
             }}>
               나를 더 건강하게 만드는<br/>작은 시작
             </h1>
             <p style={{
-              fontSize: '18px',
+              fontSize: 'clamp(15px, 4vw, 18px)',
               color: '#374151',
-              marginBottom: '16px',
+              marginBottom: '12px',
               lineHeight: '1.6'
             }}>
               당신의 몸은 매일 당신이 어떻게 살아왔는지<br/>
               이야기하고 있어요
             </p>
             <p style={{
-              fontSize: '16px',
+              fontSize: 'clamp(14px, 3.5vw, 16px)',
               color: '#6B7280',
-              marginBottom: '40px',
+              marginBottom: '32px',
               lineHeight: '1.6'
             }}>
               오늘부터 시작하는<br/>
@@ -157,13 +166,14 @@ export default function BiologicalAgeCalculator() {
                 background: 'linear-gradient(to right, #10B981, #059669)',
                 color: 'white',
                 fontWeight: 'bold',
-                fontSize: '18px',
-                padding: '20px 32px',
+                fontSize: 'clamp(16px, 4vw, 18px)',
+                padding: 'clamp(16px, 4vw, 20px) 32px',
                 borderRadius: '9999px',
                 border: 'none',
                 cursor: 'pointer',
                 boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
-                transition: 'all 0.3s'
+                transition: 'all 0.3s',
+                marginTop: '8px'
               }}
               onMouseOver={(e) => {
                 e.currentTarget.style.transform = 'scale(1.05)'
