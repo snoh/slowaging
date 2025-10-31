@@ -87,17 +87,14 @@ export default function BiologicalAgeCalculator() {
 
   return (
     <div style={{
-      position: 'fixed',
-      top: 0,
-      left: 0,
       width: '100vw',
-      height: '100vh',
-      overflow: 'hidden'
+      minHeight: '100vh',
+      overflowX: 'hidden'
     }}>
       <div style={{
         display: 'flex',
         width: '500vw',
-        height: '100vh',
+        minHeight: '100vh',
         transform: `translateX(-${(currentSlide - 1) * 100}vw)`,
         transition: 'transform 0.5s ease-in-out'
       }}>
@@ -113,7 +110,7 @@ export default function BiologicalAgeCalculator() {
           justifyContent: 'space-between',
           alignItems: 'center',
           background: 'linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%)',
-          padding: '60px 24px 40px',
+          padding: '60px 24px 200px',
           boxSizing: 'border-box'
         }}>
           <motion.div
@@ -173,7 +170,8 @@ export default function BiologicalAgeCalculator() {
                 cursor: 'pointer',
                 boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
                 transition: 'all 0.3s',
-                marginTop: '8px'
+                marginTop: '8px',
+                marginBottom: '80px'
               }}
               onMouseOver={(e) => {
                 e.currentTarget.style.transform = 'scale(1.05)'
