@@ -1353,7 +1353,46 @@ export default function BiologicalAgeCalculator() {
                 </button>
                 <button
                   onClick={() => {
-                    alert('결과 공유 기능은 곧 추가될 예정입니다! 😊')
+                    // 공유할 텍스트 생성
+                    const bioAge = calculateBiologicalAge()
+                    const ageDiff = getAgeDifference()
+
+                    const shareText = `
+🌱 SlowAge Journey
+
+나의 생체 나이: ${bioAge}세
+실제 나이: ${healthData.age}세
+${ageDiff < 0
+  ? `${Math.abs(ageDiff)}년 젊습니다! 🎊`
+  : ageDiff === 0
+    ? '실제 나이와 동일합니다 👍'
+    : `${ageDiff}년 더 노화되었습니다 💡`
+}
+
+━━━━━━━━━━━━━━━
+건강 점수
+━━━━━━━━━━━━━━━
+
+😴 수면: ${healthData.sleep}
+🏃 운동: ${healthData.exercise}
+🍽️ 식사: ${healthData.meal}
+😌 스트레스: ${healthData.stress}단계
+🍷 음주: ${healthData.alcohol}
+🚭 흡연: ${healthData.smoking}
+
+더 건강한 삶을 위한 여정을 함께해요!
+https://snoh.github.io/slowaging/
+                    `.trim()
+
+                    // 클립보드에 복사
+                    navigator.clipboard.writeText(shareText)
+                      .then(() => {
+                        alert('결과가 복사되었습니다! 📋\n\n원하는 곳에 붙여넣기(Ctrl+V) 하세요.')
+                      })
+                      .catch((error) => {
+                        console.error('복사 실패:', error)
+                        alert('복사에 실패했습니다.\n다시 시도해주세요.')
+                      })
                   }}
                   style={{
                     background: 'linear-gradient(to right, #10B981, #059669)',
